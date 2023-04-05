@@ -1,0 +1,5 @@
+Write Twitter tweet with a max 256 characters promoting a blog about the following text and MUST CONTAIN this link <<LINK>>:
+
+<<TITLE>>
+
+WRITE TWITTER TWEET WITH A MAX 256 CHARACTERS PROMOTING A BLOG ABOUT THE ABOVE TEXT AND MUST CONTAIN THIS LINK <<LINK>>:

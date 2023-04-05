@@ -1,0 +1,5 @@
+Imagine and Write a social media post for Facebook that is less than 2000 characters long including hashtags with a tone that is confident and a style that is instructional the language is direct and straightforward, using examples and analogies to make the content more relatable from the following text:
+
+<<FEED>>
+
+IMAGINE AND WRITE A SOCIAL MEDIA POST FOR FACEBOOK THAT IS LESS THAN 2000 CHARACTERS LONG INCLUDING HASHTAGS WITH A TONE THAT IS CONFIDENT AND STYLE THAT IS INSTRUCTIONAL THE LANGUAGE IS DIRECT AND STRAIGHTFORWARD, USING EXAMPLE AND ANALOGIES TO MAKE THE CONTENT MORE RELATABLE FROM THE TEXT ABOVE:

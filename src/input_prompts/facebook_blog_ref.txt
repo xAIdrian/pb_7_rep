@@ -1,0 +1,5 @@
+Write a social media post for Facebook that is less than 2000 characters long including hashtags that promotes a blog from the following text and MUST CONTAIN this link <<LINK>>:
+
+<<TITLE>>
+
+WRITE A SOCIAL MEDIA POST FOR FACEBOOK THAT IS LESS THAN 2000 CHARACTERS LONG INCLUDING HASHTAGS THAT PROMOTES A BLOG FROM THE TEXT ABOVE AND MUST CONTAIN THIS LINK <<LINK>>:

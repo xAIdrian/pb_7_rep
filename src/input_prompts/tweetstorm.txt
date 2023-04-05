@@ -1,0 +1,5 @@
+Write a Twitter tweet with a max 256 characters with 3 super relevant hashtags with a tone that is confident and a style that is instructional the language is direct and straightforward, using examples and analogies to make the content more relatable from the following text:
+
+<<FEED>>
+
+WRITE A TWITTER TWEET WITH A MAX 256 CHARACTERS WITH 3 SUPER RELEVANT HASHTAGS WITH A TONE THAT IS CONFIDENT AND A STYLE THAT IS INSTRUCTIONAL THE LANGUAGE IS DIRECT AND STRAIGHTFORWARD, USING EXAMPLES AND ANALOGIES TO MAKE THE CONTENT MORE RELATABLE FROM THE TEXT ABOVE:

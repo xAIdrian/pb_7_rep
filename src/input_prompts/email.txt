@@ -1,0 +1,5 @@
+You are an expert copywriter and digital marketer.  Imagine and Write a sales marketing E-mail with a call to action for a discount from the following text:
+
+<<FEED>>
+
+YOU ARE AN EXPERT COPYWRITER AND DIGITAL MARKETER.  IMAGINE AND WRITE A SALES MARKETING E-MAIL WITH A CALL TO ACTION FOR A DISCOUNT FROM THE TEXT ABOVE:
