@@ -7,15 +7,10 @@ import utility.time_utils as time_utils
 
 # posts 64 times daily
 
-# 6 posts daily
-# 2 posts per video
-pinterest_times_array = [
+linkedin_times_array = [
     '2023-03-01T09:00:00', #9am
-    '2023-03-01T11:00:00', #11am
-    '2023-03-01T13:00:00', #1pm
-    '2023-03-01T15:00:00', #3pm
-    '2023-03-01T17:00:00', #5pm
-    '2023-03-01T19:00:00' #7pm
+    '2023-03-01T12:00:00', #12pm
+    '2023-03-01T17:00:00' #5pm
 ]
 # 6 posts daily
 # 2 posts per video
@@ -104,11 +99,10 @@ def get_best_posting_time(
         times_array = instagram_times_array
     elif (posting_platform == firebase_storage.PostingPlatform.SHOPIFY):
         times_array = shopify_times_array    
-    elif (posting_platform == firebase_storage.PostingPlatform.PINTEREST):
-        times_array = pinterest_times_array    
+    elif (posting_platform == firebase_storage.PostingPlatform.LINKEDIN):
+        times_array = linkedin_times_array    
     else:
-        #this will need to be updated for an error handling system
-        times_array = youtube_times_array
+        '' #this will need to be updated for an error handling system
 
     for str_posting_time in times_array:
         formatted_iso = time_utils.convert_str_to_iso_format(str_posting_time)

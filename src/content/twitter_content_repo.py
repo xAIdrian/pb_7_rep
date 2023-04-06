@@ -10,7 +10,7 @@ import ai.gpt as gpt
 import domain.url_shortener as url_shortener
 import requests
 import media.image_creator as image_creator
-import utility.utils as utils
+import storage.dropbox_storage as dropbox_storage
 
 def initialize_tweepy():
     # Authenticate to Twitter
@@ -32,10 +32,24 @@ def update_tweet( text ):
         value = tweepy_api.update_status(status = text)  
         return value
     except Exception as e:
-        print(f'TWITTER {e}')
+        print(f'TW {e}')
         return None
 
-def update_tweet_with_media(url, message):
+def update_tweet_with_video ( db_remote_path, tweet ):
+    local_path = dropbox_storage.download_file_to_local_path(db_remote_path)
+    with open(local_path, 'rb') as f:
+        media = tweepy_api.media_upload(
+            filename=os.path.basename(local_path), 
+            file=f,
+            chunked=True, 
+            wait_for_async_finalize=True,
+            media_category='tweet_video'
+        )
+        if (len(tweet) > 275): tweet = 'Exclusive private mentorship is only available TODAY.  Click the link in our bio to instantly learn how you can stop wasting time on dating apps and have a fulfilling dating life!'
+        tweet = tweepy_api.update_status(status=tweet, media_ids=[media.media_id])
+    return tweet
+
+def update_tweet_with_image(url, tweet):
     local_filename = 'temp.jpg'
     request = requests.get(url, stream=True)
     if request.status_code == 200:
@@ -43,7 +57,7 @@ def update_tweet_with_media(url, message):
             for chunk in request:
                 image.write(chunk)
 
-        result = tweepy_api.update_status_with_media(filename=local_filename, status=message)
+        result = tweepy_api.update_status_with_media(filename=local_filename, status=tweet)
         os.remove(local_filename)
         return result
     else:
@@ -81,50 +95,43 @@ def post_scheduled_tweet( scheduled_datetime_str ):
     )
     try:
         post_params = json.loads(post_params_json)
-        print(f'TWITTER post params return {post_params}')
+        print(f'TW post params return {post_params}')
     except:
-        print('error parsing json')
         print(f'TWTITTER {post_params_json}')
-        return 'error parsing json'  
+        return ''  
             
     tweet = post_params['tweet']
     if ('media_url' in post_params):
         media_url = post_params['media_url']
         if (media_url != ''):
-            return update_tweet_with_media(media_url, tweet)
-        
+            return update_tweet_with_video(media_url, tweet)
     return update_tweet(tweet)
 
 def post_tweet(): 
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.TWITTER, 
-        post_scheduled_tweet
+        post_scheduled_tweet,
+        is_test=True
     )
 
 def schedule_video_tweet( tweet, video_remote_url ):
-    if (tweet != ''):
+    if (video_remote_url != '' and tweet != ''):
         payload = dict()
         payload['tweet'] = tweet
-
-        if (video_meta_data != '' and utils.coin_flip_is_heads()):
-            payload['media_url'] = image_creator.get_unsplash_image_url(
-                search_query = video_meta_data,
-                platform = PostingPlatform.TWITTER
-            )
-
-        firebase_storage_instance.upload_scheduled_post(
+        payload['media_url'] = video_remote_url
+        result = firebase_storage_instance.upload_scheduled_post(
             PostingPlatform.TWITTER, 
             payload
         )
-    return tweet  
+        print(f'Tweet scheduled!\n{result}')  
 
 def schedule_tweet( tweet ):
     if (tweet != ''):
         payload = dict()
         payload['tweet'] = tweet
 
-        firebase_storage_instance.upload_scheduled_post(
+        result = firebase_storage_instance.upload_scheduled_post(
             PostingPlatform.TWITTER, 
             payload
         )
-    return tweet  
+        print(f'Tweet scheduled!\n{result}') 

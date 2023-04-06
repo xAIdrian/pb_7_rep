@@ -9,7 +9,7 @@ import googleapiclient.errors
 from googleapiclient.http import MediaFileUpload
 import ai.gpt as gpt3
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
-import media.video_downloader as video_downloader
+import storage.dropbox_storage as dropbox_storage
 import pickle
 import json
 import ai.gpt as gpt
@@ -31,7 +31,16 @@ SCOPES = [
 ]
 
 # Note that this works only for shorts ATM
-def complete_scheduled_post_youtube_video ( remote_video_url ): 
+def complete_scheduling_and_posting_of_video ( db_remote_path ): 
+
+    creds = get_youtube_credentials()
+    if creds == '': return ''
+
+    youtube = googleapiclient.discovery.build(
+        API_SERVICE_NAME, 
+        API_VERSION, 
+        credentials = creds
+    )
 
     summary_file = os.path.join('src', 'outputs', 'summary_output.txt')
 
@@ -46,32 +55,15 @@ def complete_scheduled_post_youtube_video ( remote_video_url ):
         feedin_source_file=summary_file
     )
 
-    payload = dict()
-    payload['title'] = title
-    payload['description'] = description
-    payload['remote_video_url'] = remote_video_url
-
-    # try:
-    #     post_params = json.loads(payload)
-    # except:
-    #     print('YOUTUBE error parsing post params')
-    #     print('post_params_json: ', payload)
-    #     return 'Error parsing post params'
-
-    upload_file_path = video_downloader.get_downloaded_video_local_path(payload['remote_video_url'])
-    youtube = googleapiclient.discovery.build(
-        API_SERVICE_NAME, 
-        API_VERSION, 
-        credentials = get_youtube_credentials()
-    )
+    upload_file_path = dropbox_storage.download_file_to_local_path(db_remote_path)
 
     posting_time = scheduler.get_best_posting_time(PostingPlatform.YOUTUBE)
     request = youtube.videos().insert(
         part="snippet,status",
         body={
             "snippet": {
-                "title": payload['title'],
-                "description": payload['description'],
+                "title": title,
+                "description": description,
                 "categoryId": "17"
             },
             "status": {
@@ -86,7 +78,7 @@ def complete_scheduled_post_youtube_video ( remote_video_url ):
     )
     try:
         response = request.execute()
-        print(f'YOUTUBE success {response}')    
+        print(f'YT posting scheduled!\n{response}')    
     except Exception as e:    
         print(e)
         response = e
@@ -143,7 +135,7 @@ def get_youtube_credentials():
         with open(token_file, 'wb') as token:
             pickle.dump(credentials, token)
                     
-    print('\nYoutube authentication complete\n')
+    print(f'Youtube authentication complete with creds: {credentials}')
     return credentials
 
 def post_scheduled_upload_video_to_youtube():
@@ -183,7 +175,7 @@ def post_scheduled_upload_video_to_youtube():
 
             print('\nYOUTUBE post_params: ', post_params, '\n')
         except:
-            print('YOUTUBE error parsing post params')
+            print('YT error parsing post params')
             print('post_params_json: ', post_params_json)
             return 'Error parsing post params'
 
@@ -216,7 +208,7 @@ def post_scheduled_upload_video_to_youtube():
         )
         try:
             response = request.execute()
-            print(f'YOUTUBE success {response}')
+            print(f'YT success {response}')
 
             firebase_storage_instance.delete_post(
                 PostingPlatform.YOUTUBE, 
@@ -245,7 +237,7 @@ def schedule_video_story(image_query):
     )
     video_remote_url = video_editor.edit_movie_for_remote_url(image_query)
     if (video_remote_url != ''):
-        result = complete_scheduled_post_youtube_video(video_remote_url)
+        result = complete_scheduling_and_posting_of_video(video_remote_url)
         print(f'youtube schedule result\n\n{result}')
     else:
         print('something went wrong with our video remote url')    

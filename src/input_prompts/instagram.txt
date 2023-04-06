@@ -1,5 +1,5 @@
-Imagine and Write a social media post for Instagram that is less than 2000 characters long including hashtags with a tone that is confident and a style that is instructional the language is direct and straightforward, using examples and analogies to make the content more relatable from the following text:
+Imagine and Write a social media post for Instagram that is less than 2000 characters long with a tone that is confident and a style that is instructional the language is direct and straightforward, using examples and analogies to make the content more relatable including hashtags only at the end of the post from the following text:
 
 <<FEED>>
 
-IMAGINE AND WRITE A SOCIAL MEDIA POST FOR INSTAGRAM THAT IS LESS THAN 2000 CHARACTERS LONG INCLUDING HASHTAGS WITH A TONE THAT IS CONFIDENT AND STYLE THAT IS INSTRUCTIONAL THE LANGUAGE IS DIRECT AND STRAIGHTFORWARD, USING EXAMPLE AND ANALOGIES TO MAKE THE CONTENT MORE RELATABLE FROM THE TEXT ABOVE:
+IMAGINE AND WRITE A SOCIAL MEDIA POST FOR INSTAGRAM THAT IS LESS THAN 2000 CHARACTERS LONG WITH A TONE THAT IS CONFIDENT AND STYLE THAT IS INSTRUCTIONAL THE LANGUAGE IS DIRECT AND STRAIGHTFORWARD, USING EXAMPLE AND ANALOGIES TO MAKE THE CONTENT MORE RELATABLE INCLUDING HASHTAGS ONLY AT THE END OF THE POST FROM THE TEXT ABOVE:
