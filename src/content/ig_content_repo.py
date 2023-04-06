@@ -44,6 +44,15 @@ def optimize_video_for_reels( input_file ):
     subprocess.call(cmd)
     return output_file
 
+def optimize_video_for_reels_url(firebase_params):
+    local_video_download = dropbox_storage.download_file_to_local_path(firebase_params['video_url'])
+    optimized_local_path = optimize_video_for_reels(local_video_download)
+    optimized_url = dropbox_storage.upload_file_for_sharing_url(
+        optimized_local_path, 
+        '/ShortVideoReformatted/' + os.path.basename(optimized_local_path)
+    )
+    return optimized_url
+
 def create_ig_media_object( params, with_token ):
     """ Create media object
 
@@ -152,12 +161,7 @@ def make_ig_api_call_with_token( firebase_params ):
 
     elif (firebase_params['media_type'] == 'REELS' or firebase_params['media_type'] == 'VIDEO'):
         
-        local_video_download = dropbox_storage.download_file_to_local_path(firebase_params['video_url'])
-        optimized_local_path = optimize_video_for_reels(local_video_download)
-        optimized_url = dropbox_storage.upload_file_for_sharing_url(
-            optimized_local_path, 
-            '/ShortVideoUploaded/' + os.path.basename(optimized_local_path)
-        )
+        optimized_url = optimize_video_for_reels_url(firebase_params)
         
         post_params['media_type'] = 'REELS'
         post_params['video_url'] = optimized_url

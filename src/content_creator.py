@@ -60,20 +60,21 @@ if __name__ == '__main__':
         # fb_content_repo.post_to_facebook()
 
         # Twitter 
-        gpt.generate_video_with_prompt(
-            prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
-            db_remote_path=db_path,
-            upload_func=twitter_content_repo.schedule_video_tweet
-        )
-        gpt.generate_text_prompt(
-            prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
-            post_num=8,
-            upload_func=twitter_content_repo.schedule_tweet,
-            should_polish=True
-        )
-        twitter_content_repo.post_tweet()
+        # gpt.generate_video_with_prompt(
+        #     prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
+        #     db_remote_path=db_path,
+        #     upload_func=twitter_content_repo.schedule_video_tweet
+        # )
+        # gpt.generate_text_prompt(
+        #     prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
+        #     post_num=8,
+        #     upload_func=twitter_content_repo.schedule_tweet,
+        #     should_polish=True
+        # )
+        # twitter_content_repo.post_tweet()
                  
-    
+        # dropbox_storage.move_file(db_path, '/ContentUploaded/' + os.path.basename(db_path))
+   
     #             # BLOG AND PROMOS
     #             gpt.generate_prompt_response(
     #                 prompt_source=os.path.join('src', 'input_prompts', 'blog.txt'),
