@@ -73,16 +73,17 @@ def create_ig_media_object( params, with_token ):
     
     return endpointParams
 
-def schedule_ig_video_post( caption, media_url ):
+def schedule_ig_video_post( caption, db_remote_path ):
     
-    params = meta_tokens.fetch_ig_access_token() 
+    params = meta_tokens.fetch_personal_access_token() 
 
     params['media_type'] = 'REELS' 
-    params['media_url'] = media_url 
+    params['media_url'] = db_remote_path 
     params['caption'] = caption
 
     remote_media_obj = create_ig_media_object( params, False )
-    firebase_storage_instance.upload_scheduled_post(PostingPlatform.INSTAGRAM, remote_media_obj)
+    upload_result = firebase_storage_instance.upload_scheduled_post(PostingPlatform.INSTAGRAM, remote_media_obj)
+    print(f'IG scheduled!\n{upload_result}')
 
 def get_ig_container_status( ig_container_id, params ):
     """ Check the status of a media object
@@ -138,7 +139,7 @@ def publish_image( media_url, post_params, firebase_object):
 
 # this one worked but went through the FFMPEG process https://dl.dropboxusercontent.com/s/tlyj3rjtc3muu1j/what%20is%20status.mp4
 def make_ig_api_call_with_token( firebase_params ):        
-    post_params = meta_tokens.fetch_ig_access_token() 
+    post_params = meta_tokens.fetch_personal_access_token() 
 
     post_params['caption'] = firebase_params['caption']
     post_params['published'] = firebase_params['published']
@@ -151,7 +152,7 @@ def make_ig_api_call_with_token( firebase_params ):
 
     elif (firebase_params['media_type'] == 'REELS' or firebase_params['media_type'] == 'VIDEO'):
         
-        local_video_download = video_downloader.download_video(firebase_params['video_url'])
+        local_video_download = dropbox_storage.download_file_to_local_path(firebase_params['video_url'])
         optimized_local_path = optimize_video_for_reels(local_video_download)
         optimized_url = dropbox_storage.upload_file_for_sharing_url(
             optimized_local_path, 
@@ -164,7 +165,7 @@ def make_ig_api_call_with_token( firebase_params ):
         post_params['share_to_feed'] = True
 
         post_response = make_api_call(url=media_url, req_params=post_params, type='POST')
-        publish_response = pretty_publish_ig_media(
+        publish_response = monitor_ig_upload_status(
             post_response,
             post_params,
             publish_media_video_call
@@ -184,11 +185,10 @@ def post_scheduled_ig_post( schedule_datetime_str ):
     )
     try:
         post_params_json = json.loads(post_params_json)
-        print(f'INSTAGRAM {post_params_json}')
+        print(f'IG firebase fetched {post_params_json}')
     except:
-        print('INSTAGRAM error parsing json')
-        print(f'INSTAGRAM {post_params_json}')
-        return 'Error parsing json'    
+        print(f'IG error {post_params_json}')
+        return ''    
     
     return make_ig_api_call_with_token(post_params_json)
 
@@ -216,15 +216,17 @@ def publish_ig_media( mediaObjectId, params ) :
 def post_ig_media_post():
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.INSTAGRAM,
-        post_scheduled_ig_post
+        post_scheduled_ig_post,
+        is_test=True
     )
 
 def schedule_ig_image_post( caption, image_query ):
-    '''Method called from main class that creates our endpoint request and makes the API call.
+    '''
+    Method called from main class that creates our endpoint request and makes the API call.
 
     @returns: nothing
     '''
-    params = meta_tokens.fetch_ig_access_token() 
+    params = meta_tokens.fetch_personal_access_token() 
     params['media_type'] = 'IMAGE' 
         
     params['media_url'] = image_creator.get_unsplash_image_url(image_query, PostingPlatform.INSTAGRAM) 
@@ -233,14 +235,11 @@ def schedule_ig_image_post( caption, image_query ):
     remote_media_obj = create_ig_media_object( params, False ) 
     firebase_storage_instance.upload_scheduled_post(PostingPlatform.INSTAGRAM, remote_media_obj)
 
-def pretty_publish_ig_media( ig_upload_response, post_params, publish_func ):	
-    print(f'\nimageMediaObjectResponse\n')
-    print(ig_upload_response)
-    
+def monitor_ig_upload_status( ig_upload_response, post_params, publish_func ):	
     upload_container_id = ig_upload_response['json_data']['id'] # id of the media object that was created
     container_status_code = 'IN_PROGRESS'
 
-    print(f"\n\nID: {upload_container_id}") # id of the object
+    print(f"\nIG upload container {upload_container_id} beginning upload") # id of the object
 
     while container_status_code != 'FINISHED': # keep checking until the object status is finished
         container_status_response = get_ig_container_status( upload_container_id, post_params ) # check the status on the object
@@ -249,13 +248,12 @@ def pretty_publish_ig_media( ig_upload_response, post_params, publish_func ):
             print(container_status_response['json_data']['status'])
             break
 
-        print(f"\tStatus Code: {container_status_code} ") # status code of the object
+        print(f"Status Code: {container_status_code.lower()}") # status code of the object
         time.sleep( 5 ) # wait 5 seconds if the media object is still being processed
 
     publish_container_response = publish_func( upload_container_id, post_params ) # publish the post to instagram
-
-    print(f"\tResponse: {publish_container_response['json_data_pretty']}") # json response from ig api
-    return ig_upload_response['json_data']
+    print(f"IG upload complete {publish_container_response['json_data']['id']}") # json response from ig api
+    return publish_container_response
 
 def get_content_publishing_limit( params ) :
     """ Get the api limit for the user

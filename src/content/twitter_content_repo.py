@@ -10,8 +10,7 @@ import ai.gpt as gpt
 import domain.url_shortener as url_shortener
 import requests
 import media.image_creator as image_creator
-import utility.utils as utils
-import media.video_downloader as video_downloader
+import storage.dropbox_storage as dropbox_storage
 
 def initialize_tweepy():
     # Authenticate to Twitter
@@ -33,11 +32,11 @@ def update_tweet( text ):
         value = tweepy_api.update_status(status = text)  
         return value
     except Exception as e:
-        print(f'TWITTER {e}')
+        print(f'TW {e}')
         return None
 
-def update_tweet_with_video ( url, tweet ):
-    local_path = video_downloader.download_video(url)
+def update_tweet_with_video ( db_remote_path, tweet ):
+    local_path = dropbox_storage.download_file_to_local_path(db_remote_path)
     with open(local_path, 'rb') as f:
         media = tweepy_api.media_upload(
             filename=os.path.basename(local_path), 
@@ -96,18 +95,16 @@ def post_scheduled_tweet( scheduled_datetime_str ):
     )
     try:
         post_params = json.loads(post_params_json)
-        print(f'TWITTER post params return {post_params}')
+        print(f'TW post params return {post_params}')
     except:
-        print('error parsing json')
         print(f'TWTITTER {post_params_json}')
-        return 'error parsing json'  
+        return ''  
             
     tweet = post_params['tweet']
     if ('media_url' in post_params):
         media_url = post_params['media_url']
         if (media_url != ''):
             return update_tweet_with_video(media_url, tweet)
-        
     return update_tweet(tweet)
 
 def post_tweet(): 
@@ -122,19 +119,19 @@ def schedule_video_tweet( tweet, video_remote_url ):
         payload = dict()
         payload['tweet'] = tweet
         payload['media_url'] = video_remote_url
-        firebase_storage_instance.upload_scheduled_post(
+        result = firebase_storage_instance.upload_scheduled_post(
             PostingPlatform.TWITTER, 
             payload
         )
-    return video_remote_url  
+        print(f'Tweet scheduled!\n{result}')  
 
 def schedule_tweet( tweet ):
     if (tweet != ''):
         payload = dict()
         payload['tweet'] = tweet
 
-        firebase_storage_instance.upload_scheduled_post(
+        result = firebase_storage_instance.upload_scheduled_post(
             PostingPlatform.TWITTER, 
             payload
         )
-    return tweet  
+        print(f'Tweet scheduled!\n{result}') 

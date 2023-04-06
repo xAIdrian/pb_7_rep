@@ -1,4 +1,5 @@
 import sys
+import os
 sys.path.append("../src")
 
 import dropbox
@@ -63,20 +64,25 @@ def get_file_name_from_path( file_path ):
         print("The last .mp4 file name is:", file_name)
         return file_name
     
-def download_file_to_local_path( remote_url, local_folder_path ):
+def download_file_to_local_path( remote_file_path):
 
-    local_file_path = local_folder_path + '/' + entry.name
+    local_download_path = os.path.join('src', 'output_downloads', get_file_name_from_path(remote_file_path))
     # Check if this is the earliest uploaded video file
-    if earliest_uploaded is not None:
-        # Download the earliest uploaded video file
-        with open(local_file_path, "wb") as f:
-            metadata, res = dbx.files_download(path=earliest_file_path)
-            f.write(res.content)
-        print(f"Earliest uploaded video file '{earliest_file_path}' downloaded to '{local_file_path}'")
-        return local_file_path
-    else:
-        print("No video files found in the folder")        
+    
+    if (remote_file_path is None):
+        print("No files found") 
         return ''
+    elif (os.path.isfile(local_download_path)):
+        print("File already downloaded")        
+        return local_download_path
+    else:
+        # Download the earliest uploaded video file
+        print('Downloading from dropbox...')
+        with open(local_download_path, "wb") as f:
+            metadata, res = dbx.files_download(path=remote_file_path)
+            f.write(res.content)
+        print(f"Earliest uploaded video file '{remote_file_path}' downloaded to '{local_download_path}'")
+        return local_download_path
 
 def get_streaming_download_url( file_path ):
     settings = dropbox.sharing.SharedLinkSettings(
@@ -86,7 +92,7 @@ def get_streaming_download_url( file_path ):
     url = link.url.replace('?dl=0', '').replace('www.dropbox', 'dl.dropboxusercontent')
     return url
 
-def get_file_path_for_earliest_ready_short_video():
+def get_earliest_ready_short_video():
     # Get a list of all the files in the folder
     try:
         result = dbx.files_list_folder(DB_FOLDER_READY)
@@ -96,8 +102,7 @@ def get_file_path_for_earliest_ready_short_video():
 
     # Initialize variables to track the earliest uploaded video file
     earliest_uploaded = None
-    earliest_file_path = None
-    # local_file_path = None
+    earliest_entry = None
 
     for entry in result.entries:
         if isinstance(entry, dropbox.files.FileMetadata) and entry.name.endswith('.mp4'):
@@ -105,10 +110,10 @@ def get_file_path_for_earliest_ready_short_video():
             
             if earliest_uploaded is None or uploaded < earliest_uploaded:
                 print(f"Earliest updated: {entry.name}, uploaded @ {uploaded}")
-                earliest_file_path = entry.path_display
+                earliest_entry = entry
                 earliest_uploaded = uploaded
 
-    return get_streaming_download_url(earliest_file_path)
+    return earliest_entry
 
 def upload_file( local_file_path, dropbox_file_path ):
     """Upload a file from the local machine to a path in the Dropbox app directory.

@@ -6,31 +6,22 @@ import meta_graph_api.meta_tokens as meta_tokens
 from domain.endpoint_definitions import make_api_call
 import media.image_creator as image_creator
 import appsecrets as appsecrets
-import media.video_downloader as video_downloader
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 import domain.url_shortener as url_shortener
-import content.ig_content_repo as ig_content_repo
+import storage.dropbox_storage as dropbox_storage
 import ai.gpt as gpt
 import json
 import requests
 
-def make_fb_feed_call_with_token( post_json_object ):
-    params = meta_tokens.fetch_fb_page_access_token()
-    post_json_object['access_token'] = params['page_access_token']
-    print(f'FACEBOOK {post_json_object}')
-
-    url = params['endpoint_base'] + appsecrets.FACEBOOK_GRAPH_API_PAGE_ID + '/feed'
-    result = make_api_call( url=url, req_json=post_json_object, type='POST')
-    print(result['json_data_pretty'] )
-    return result
-
 def chunk_video_upload( post_json_object ):
-    local_video_path = video_downloader.download_video(post_json_object['url'])
+    local_video_path = dropbox_storage.download_file_to_local_path(post_json_object['url'])
     file_size = os.path.getsize(local_video_path)
+    page_id=post_json_object['page_id']
     print(f'processing file size: {file_size}')
+
     # Step 1: Upload the video
     video_response = requests.post(
-        f'https://graph-video.facebook.com/{appsecrets.FACEBOOK_GRAPH_API_PAGE_ID}/videos',
+        f'https://graph-video.facebook.com/{page_id}/videos',
         params={ 
             'access_token': post_json_object['access_token'],
             'upload_phase': 'start',
@@ -50,7 +41,7 @@ def chunk_video_upload( post_json_object ):
             if not chunk:
                 break
             upload_response = requests.post(
-                f'https://graph-video.facebook.com/{appsecrets.FACEBOOK_GRAPH_API_PAGE_ID}/videos',
+                f'https://graph-video.facebook.com/{page_id}/videos',
                 params={
                     'access_token': post_json_object['access_token'],
                     'upload_phase': 'transfer',
@@ -68,64 +59,67 @@ def chunk_video_upload( post_json_object ):
 
     # Step 4: Finish the video upload
     finish_response = requests.post(
-        f'https://graph-video.facebook.com/{appsecrets.FACEBOOK_GRAPH_API_PAGE_ID}/videos',
+        f'https://graph-video.facebook.com/{page_id}/videos',
         params={
             'access_token': post_json_object['access_token'],
             'upload_phase': 'finish',
             'upload_session_id': upload_session_id,
-            # 'title': 'My video title',
             'description': post_json_object['description']
         }
     )
     return finish_response, video_id
 
-def make_fb_call_with_token( post_json_object ):
+def post_to_page( firebase_object ):
     params = meta_tokens.fetch_fb_page_access_token()
-
     params['access_token'] = params['page_access_token']
-    post_json_object['access_token'] = params['page_access_token']
+    params['page_id'] = appsecrets.FACEBOOK_GRAPH_API_PAGE_ID
+    return post_content(params, firebase_object)
 
-    print(f'FACEBOOK {post_json_object}')
+def post_content( params, firebase_object ):
 
-    if (post_json_object['media_type'] == 'IMAGE'):
-        url = params['endpoint_base'] + appsecrets.FACEBOOK_GRAPH_API_PAGE_ID + '/photos'
-        result = make_api_call( url=url, req_json=post_json_object, type='POST')
-        print(result['json_data_pretty'] )
-        return result
+    if (firebase_object['media_type'] == 'IMAGE'):
+        url = params['endpoint_base'] + params['page_id'] + '/photos'
+
+        params['message'] = firebase_object['message']
+        params['url'] = firebase_object['url']
+
+        response = make_api_call( url=url, req_json=params, type='POST')
+        return response
     
-    elif (post_json_object['media_type'] == 'VIDEO'):    
-        url = params['endpoint_base'] + appsecrets.FACEBOOK_GRAPH_API_PAGE_ID + '/videos'
+    elif (firebase_object['media_type'] == 'VIDEO'):  
         
-        post_json_object['url'] = post_json_object['url']
-        post_json_object['description'] = post_json_object['message']
-        post_json_object['published'] = post_json_object['published']
+        params['url'] = firebase_object['url']
+        params['description'] = firebase_object['message']
 
-        response, video_id = chunk_video_upload(post_json_object)
+        response, video_id = chunk_video_upload(params)
         return response
 
 def post_scheduled_fb_post( scheduled_datetime_str ):
-    post_json = firebase_storage_instance.get_specific_post(
+    firebase_json = firebase_storage_instance.get_specific_post(
         PostingPlatform.FACEBOOK, 
         scheduled_datetime_str
     )
     try:
-        post_json_object = json.loads(post_json)
+        post_json_object = json.loads(firebase_json)
+        print(f'FB {post_json_object}')
     except:
-        print(F'FACEBOOK {post_json}')
-        return 'FACEBOOK error parsing json'
+        print(F'FB error {firebase_json}')
+        return ''
         
-    return make_fb_call_with_token(post_json_object)
+    page_result = post_to_page(post_json_object)
+    return page_result
 
-'''
-Method called from main class that creates our endpoint request and makes the API call.
-Also, prints status of uploading the payload.
-
-@returns: nothing
-'''
 def post_to_facebook():
+    '''
+    Method called from main class that creates our endpoint request and makes the API call.
+    Also, prints status of uploading the payload.
+
+    @returns: nothing
+    '''
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.FACEBOOK,
-        post_scheduled_fb_post
+        post_scheduled_fb_post,
+        is_test=True
     )
 
 def schedule_fb_post( caption, image_query ):
@@ -140,7 +134,7 @@ def schedule_fb_post( caption, image_query ):
         PostingPlatform.FACEBOOK, 
         payload
     )
-    print('FACEBOOK upload scheduled post ressult' + str(result))
+    print('FB upload scheduled post result' + str(result))
     return result
     
 def post_blog_promo( blog_title, ref_url ):
@@ -163,10 +157,10 @@ def post_blog_promo( blog_title, ref_url ):
     }
     make_fb_feed_call_with_token(payload)  
 
-def schedule_fb_video_post( caption, remote_video_url ):    
+def schedule_fb_video_post( caption, db_remote_path ):    
     payload = {
         'media_type': 'VIDEO',
-        'url': remote_video_url,
+        'url': db_remote_path,
         'message': caption, 
         'published' : True
     }
@@ -174,5 +168,4 @@ def schedule_fb_video_post( caption, remote_video_url ):
         PostingPlatform.FACEBOOK, 
         payload
     )
-    print('FACEBOOK upload scheduled post ressult' + str(result))
-    return result
+    print(f'FB scheduled!{result}')

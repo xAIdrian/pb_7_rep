@@ -25,7 +25,7 @@ def create_fb_credentials_object():
 
 	return creds	
 
-def create_ig_credentials_object():
+def create_personal_credentials_object():
 	""" 
         Get creds required for use in the applications
         
@@ -44,7 +44,7 @@ def create_ig_credentials_object():
 
 	return creds
 
-def fetch_ig_access_token() :
+def fetch_personal_access_token() :
     """ 
         Get long lived access token
         
@@ -53,7 +53,7 @@ def fetch_ig_access_token() :
         @returns:
             object: data from the endpoint
     """
-    params = create_ig_credentials_object()
+    params = create_personal_credentials_object()
     cachedToken = firebase_storage_instance.get_meta_bearer_token(PostingPlatform.INSTAGRAM)
 
     if (cachedToken != ''):
@@ -88,7 +88,7 @@ def make_page_access_token_request():
         @returns:
             dict: complete params including the access token for future requests
     '''
-    print('FACEBOOK creating an entirely new token using short-lived')
+    print('FB creating an entirely new token using short-lived')
 
     # construct our base request params used throughout
     params = create_fb_credentials_object()
@@ -120,14 +120,13 @@ def refresh_fb_page_access_token( existing_access_token ):
     # Check the state of the existing access token
     debug_token_url = f'https://graph.facebook.com/v12.0/debug_token?input_token={existing_access_token}&access_token={appsecrets.META_APP_ID}|{appsecrets.META_APP_SECRET}'
 
-    print(f'FACEBOOK checking the validity of cached token')
+    print(f'FB checking the validity of cached token')
     debug_token_response = requests.get(debug_token_url)
 
     if debug_token_response.status_code == 200:
         data = json.loads(debug_token_response.text)
         is_valid = data['data']['is_valid']
         expires_at = data['data']['expires_at']
-        print(f'Current token expires at {expires_at}')
         if not is_valid:
             raise ValueError('The existing access token is not valid')
     else:
@@ -140,7 +139,7 @@ def refresh_fb_page_access_token( existing_access_token ):
         raise ValueError(f'Error in response: {error["message"]}')
 
     # Get the new long-lived access token
-    print('FACEBOOK making request to update our existing long lived token')
+    print('FB making request to update our existing long lived token')
     exchange_token_url = f'https://graph.facebook.com/v12.0/oauth/access_token?grant_type=fb_exchange_token&client_id={appsecrets.META_APP_ID}&client_secret={appsecrets.META_APP_SECRET}&fb_exchange_token={existing_access_token}'
     exchange_token_response = requests.get(exchange_token_url)
 
@@ -170,7 +169,6 @@ def fetch_fb_page_access_token():
         params['graph_domain'] = 'https://graph.facebook.com/' # base domain for api calls
         params['graph_version'] = 'v15.0' # version of the api we are hitting
         params['endpoint_base'] = params['graph_domain'] + params['graph_version'] + '/'
-        
         params['page_access_token'] = refresh_fb_page_access_token(cachedToken)
         return params
     else:
