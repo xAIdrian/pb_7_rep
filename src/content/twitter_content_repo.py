@@ -11,6 +11,7 @@ import domain.url_shortener as url_shortener
 import requests
 import media.image_creator as image_creator
 import utility.utils as utils
+import media.video_downloader as video_downloader
 
 def initialize_tweepy():
     # Authenticate to Twitter
@@ -35,7 +36,21 @@ def update_tweet( text ):
         print(f'TWITTER {e}')
         return None
 
-def update_tweet_with_media(url, message):
+def update_tweet_with_video ( url, tweet ):
+    local_path = video_downloader.download_video(url)
+    with open(local_path, 'rb') as f:
+        media = tweepy_api.media_upload(
+            filename=os.path.basename(local_path), 
+            file=f,
+            chunked=True, 
+            wait_for_async_finalize=True,
+            media_category='tweet_video'
+        )
+        if (len(tweet) > 275): tweet = 'Exclusive private mentorship is only available TODAY.  Click the link in our bio to instantly learn how you can stop wasting time on dating apps and have a fulfilling dating life!'
+        tweet = tweepy_api.update_status(status=tweet, media_ids=[media.media_id])
+    return tweet
+
+def update_tweet_with_image(url, tweet):
     local_filename = 'temp.jpg'
     request = requests.get(url, stream=True)
     if request.status_code == 200:
@@ -43,7 +58,7 @@ def update_tweet_with_media(url, message):
             for chunk in request:
                 image.write(chunk)
 
-        result = tweepy_api.update_status_with_media(filename=local_filename, status=message)
+        result = tweepy_api.update_status_with_media(filename=local_filename, status=tweet)
         os.remove(local_filename)
         return result
     else:
@@ -91,32 +106,27 @@ def post_scheduled_tweet( scheduled_datetime_str ):
     if ('media_url' in post_params):
         media_url = post_params['media_url']
         if (media_url != ''):
-            return update_tweet_with_media(media_url, tweet)
+            return update_tweet_with_video(media_url, tweet)
         
     return update_tweet(tweet)
 
 def post_tweet(): 
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.TWITTER, 
-        post_scheduled_tweet
+        post_scheduled_tweet,
+        is_test=True
     )
 
 def schedule_video_tweet( tweet, video_remote_url ):
-    if (tweet != ''):
+    if (video_remote_url != '' and tweet != ''):
         payload = dict()
         payload['tweet'] = tweet
-
-        if (video_meta_data != '' and utils.coin_flip_is_heads()):
-            payload['media_url'] = image_creator.get_unsplash_image_url(
-                search_query = video_meta_data,
-                platform = PostingPlatform.TWITTER
-            )
-
+        payload['media_url'] = video_remote_url
         firebase_storage_instance.upload_scheduled_post(
             PostingPlatform.TWITTER, 
             payload
         )
-    return tweet  
+    return video_remote_url  
 
 def schedule_tweet( tweet ):
     if (tweet != ''):

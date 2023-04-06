@@ -78,10 +78,17 @@ def get_gpt_generated_text( prompt_source ):
     applied_prompt = utils.open_file(prompt_source).replace('<<FEED>>', feed_source)
     return gpt_3(applied_prompt)
 
+def get_polished_generated_text ( text ):
+    # get the first draft of the generated text
+    feedin_source_file = os.path.join("src", "outputs", "polish.txt")
+    applied_prompt = utils.open_file(feedin_source_file).replace('<<FEED>>', text)
+    return gpt_3(applied_prompt)
+
 def generate_video_with_prompt( 
         prompt_source, 
         remote_video_url, 
-        upload_func 
+        upload_func,
+        should_polish = False 
     ):
     """
     Convert a single file of language to another using chat GPT as a video
@@ -100,6 +107,10 @@ def generate_video_with_prompt(
     """
     print(f'Video prompt {prompt_source}')
     gpt_text = get_gpt_generated_text(prompt_source)
+
+    if (should_polish):
+        gpt_text = get_polished_generated_text(gpt_text)
+
     upload_func(gpt_text, remote_video_url)
 
 def generate_text_prompt( 

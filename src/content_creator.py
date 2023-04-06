@@ -11,8 +11,7 @@ import content.fb_content_repo as fb_content_repo
 import content.shopify_content_repo as shopify_content_repo
 import content.twitter_content_repo as twitter_content_repo
 import content.youtube_content_repo as youtube_content_repo
-import media.video_downloader as video_processor
-import storage.google_drive_storage as google_drive
+import content.linkedin_content_repo as linkedin_content_repo
 
 CLIENT_SECRET_FILE='ai-content-machine-d8dcc1434069.json'
 
@@ -56,15 +55,12 @@ if __name__ == '__main__':
         # )
         # fb_content_repo.post_to_facebook()
 
-        # Text Content
-        # # TWEETS
-        # gpt.generate_video_prompt(
+        # gpt.generate_video_with_prompt(
         #     prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
-        #     video_meta_data='',
-        #     should_polish_post=True,
-        #     post_num=8,
-        #     upload_func=twitter_content_repo.schedule_tweet
+        #     remote_video_url=db_remote_url,
+        #     upload_func=twitter_content_repo.schedule_video_tweet
         # )
+        twitter_content_repo.post_tweet()
                  
         # FACEBOOK 
         # gpt.generate_video_prompt(
@@ -74,14 +70,7 @@ if __name__ == '__main__':
         #     post_num=1,
         #     upload_func = fb_content_repo.schedule_fb_post
         # )
-    #             # INSTAGRAM
-    #             gpt.generate_prompt_response(
-    #                 prompt_source=os.path.join('src', 'input_prompts', 'instagram.txt'),
-    #                 image_query_term=content_description,
-    #                 should_polish_post=True,
-    #                 post_num=2,
-    #                 upload_func=ig_content_repo.schedule_ig_image_post
-    #             )
+    
     #             # BLOG AND PROMOS
     #             gpt.generate_prompt_response(
     #                 prompt_source=os.path.join('src', 'input_prompts', 'blog.txt'),
@@ -95,7 +84,7 @@ if __name__ == '__main__':
     #                 prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
     #                 image_query_term=content_description,
     #                 should_polish_post=True,
-    #                 post_num=16,
+    #                 post_num=12,
     #                 upload_func=twitter_content_repo.schedule_tweet
     #             )
     #         except Exception as e:
