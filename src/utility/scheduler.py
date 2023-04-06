@@ -36,7 +36,7 @@ youtube_times_array = [
 ]
 # 3 blogs per day
 # 1 blog per video
-shopify_times_array = [
+medium_times_array = [
     '2023-03-01T09:00:00', #9am
     '2023-03-01T12:00:00', #12pm,
     '2023-03-01T16:00:00', #4pm
@@ -97,8 +97,8 @@ def get_best_posting_time(
         times_array = twitter_times_array  
     elif (posting_platform == firebase_storage.PostingPlatform.INSTAGRAM):      
         times_array = instagram_times_array
-    elif (posting_platform == firebase_storage.PostingPlatform.SHOPIFY):
-        times_array = shopify_times_array    
+    elif (posting_platform == firebase_storage.PostingPlatform.MEDIUM):
+        times_array = medium_times_array    
     elif (posting_platform == firebase_storage.PostingPlatform.LINKEDIN):
         times_array = linkedin_times_array    
     else:

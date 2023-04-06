@@ -1,5 +1,5 @@
-Imagine and Write an informative and educational SEO optimized 3000 word blog post with <H1>`s and <H2>`s, in HTML format with an empty new line seperating each paragraph, from the following text:
+Imagine and Write an SEO optimized 3000 word blog post in a confident and casual tone from the following text. The text will be wrapped in HTML format using a mix of tags to make the content look better and more natural – H2, H3, P, B, UL / LI and insert an empty new line seperating each paragraph, here is the following text to generate the blog from:
 
 <<FEED>>
 
-IMAGINE AND WRITE AN INFORMATIVE AND EDUCATIONAL SEO OPTIMIZED 3000 WORD BLOG POST WITH <H1>`S AND <H2>`S, IN HTML FORMAT WITH AN EMPTY NEW LINE SEPERATING EACH PARAGRAPH, FROM THE TEXT ABOVE:
+IMAGINE AND WRITE AN SEO OPTIMIZED 3000 WORD BLOG POST IN A CONFIDENT AND CASUAL TONE FROM THE ABOVE TEXT. THE TEXT WILL BE WRAPPED IN HTML FORMAT USING A MIX OF TAGS TO MAKE THE CONTENT LOOK BETTER AND MORE NATURAL – H2, H3, P, B, UL / LI AND INSERT AN EMPTY NEW LINE SEPERATING EACH PARAGRAPH, HERE IS THE ABOVE TEXT TO GENERATE THE BLOG FROM:

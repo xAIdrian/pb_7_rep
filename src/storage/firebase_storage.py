@@ -13,10 +13,9 @@ class PostingPlatform(Enum):
     INSTAGRAM = 'instagram'
     TWITTER = 'twitter'
     YOUTUBE = 'youtube'
-    SHOPIFY = 'shopify'
+    MEDIUM = 'medium'
     TIKTOK = 'tiktok'
     LINKEDIN = 'linkedin'
-    PINTEREST = 'pinterest'
 
 class FirebaseStorage():
     # Constants

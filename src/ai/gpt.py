@@ -88,7 +88,7 @@ def generate_video_with_prompt(
         prompt_source, 
         db_remote_path, 
         upload_func,
-        should_polish = False 
+        should_polish = True 
     ):
     """
     Convert a single file of language to another using chat GPT as a video
@@ -117,23 +117,9 @@ def generate_text_prompt(
         prompt_source, 
         post_num, 
         upload_func,
-        should_polish = False 
+        should_polish = True 
     ):
-    """
-    Convert a single file of language to another using chat GPT 
-        
-        Args:
-            feedin_source (str): The path to the file.
-            prompt_source (str): The path for the GPT prompt.
-            type (str): simple categorization to help with naming
-            dropbox_file_path (str): The path to the file in the Dropbox app directory.
-
-        Example:
-            dropbox_upload_file('.', 'test.csv', '/stuff/test.csv')
-
-        Returns: 
-            Nothing
-    """
+    
     for num in range(post_num):
         print(f'Processing #{num+1} of {prompt_source}')
         gpt_text = get_gpt_generated_text(prompt_source)

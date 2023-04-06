@@ -1,5 +1,5 @@
-Imagine and Write an SEO optimized YouTube video title from the following text:
+Write an attention-grabbing headline for a YouTube video on the following text:
 
 <<FEED>>
 
-IMAGINE AND WRITE AN SEO OPTIMIZED YOUTUBE VIDEO TITLE FROM THE ABOVE TEXT:
+WRITE AN ATTENTION-GRABBING HEADLINE FOR A YOUTUBE VIDEO ON THE ABOVE TEXT:

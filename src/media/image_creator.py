@@ -20,7 +20,7 @@ def get_unsplash_image_url( search_query, platform, orientation = 'portrait' ):
         resolution_key='regular'
     elif(platform == PostingPlatform.TWITTER):
         resolution_key='regular'
-    elif(platform == PostingPlatform.SHOPIFY):
+    elif(platform == PostingPlatform.MEDIUM):
         resolution_key='regular'    
     elif(platform == PostingPlatform.YOUTUBE):
         resolution_key='full'
