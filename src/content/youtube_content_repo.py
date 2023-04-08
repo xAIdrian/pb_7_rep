@@ -16,6 +16,7 @@ import ai.gpt as gpt
 import media.video_editor as video_editor
 from ai.gpt_write_story import create_story_and_scenes
 import utility.scheduler as scheduler
+import media.video_converter as video_converter
 
 # Build the YouTube API client
 API_SERVICE_NAME = "youtube"
@@ -179,7 +180,7 @@ def post_scheduled_upload_video_to_youtube():
             print('post_params_json: ', post_params_json)
             return 'Error parsing post params'
 
-        upload_file_path = video_downloader.get_downloaded_video_local_path(
+        upload_file_path = video_converter.get_downloaded_video_local_path(
             post_params['remote_video_url']
         )
         youtube = googleapiclient.discovery.build(
@@ -222,8 +223,8 @@ def post_youtube_video():
     response = post_scheduled_upload_video_to_youtube()
     print(f'Youtube response {response}') 
 
-def process_initial_video_download_transcript(youtube_url, should_summarize=True):
-    filename = video_downloader.save_to_mp3(youtube_url)
+def process_initial_video_download_transcript(db_remote_path, should_summarize=True):
+    filename = video_converter.local_video_to_mp3(db_remote_path)
     transcriptname = gpt.mp3_to_transcript(filename)
     if (should_summarize): gpt.transcript_to_summary(transcriptname, filename) 
 

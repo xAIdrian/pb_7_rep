@@ -6,47 +6,14 @@ import time
 import meta_graph_api.meta_tokens as meta_tokens
 from domain.endpoint_definitions import make_api_call
 import media.image_creator as image_creator
-import media.video_downloader as video_downloader
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 import json
-import subprocess
 import storage.dropbox_storage as dropbox_storage
-import media.video_downloader as video_downloader
-
-def optimize_video_for_reels( input_file ):
-
-    output_file = os.path.join('src','output_downloads', 'reeloptimized-' + os.path.basename(input_file))
-    scale_filter = "scale=-2:1080"  # adjust the height to 1080 pixels and maintain the aspect ratio
-
-    cmd = [
-        "ffmpeg",
-        "-i", input_file,
-        "-c:v", "libx264",
-        "-brand", "mp42",
-        "-pix_fmt", "yuv420p",
-        "-profile:v", "main",
-        "-level", "3.1",
-        "-preset", "medium",
-        "-tune", "fastdecode",
-        "-movflags", "+faststart",
-        "-c:a", "aac",
-        "-b:a", "128k",
-        "-ac", "2",
-        "-ar", "48000",
-        "-maxrate", "25M",
-        "-bufsize", "30M",
-        "-vf", scale_filter,
-        "-r", "60",
-        "-f", "mp4",
-        "-y", output_file
-    ]
-
-    subprocess.call(cmd)
-    return output_file
+import media.video_converter as video_converter
 
 def optimize_video_for_reels_url(firebase_params):
     local_video_download = dropbox_storage.download_file_to_local_path(firebase_params['video_url'])
-    optimized_local_path = optimize_video_for_reels(local_video_download)
+    optimized_local_path = video_converter.optimize_video_for_reels(local_video_download)
     optimized_url = dropbox_storage.upload_file_for_sharing_url(
         optimized_local_path, 
         '/ShortVideoReformatted/' + os.path.basename(optimized_local_path)
