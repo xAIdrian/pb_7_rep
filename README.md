@@ -54,6 +54,9 @@ docker tag seven_contents_by_ai_docker_flamingo gcr.io/ai-content-machine/seven_
 docker run gcr.io/ai-content-machine/seven_contents_by_ai_docker_flamingo 
 docker push gcr.io/ai-content-machine/seven_contents_by_ai_docker_flamingo
 ```
-
+for mac:
+```
+https://cloud.google.com/build/docs/build-push-docker-image
+```
 ### Execute on a schedule with Google Cloud Run Scheduler
 instruction https://cloud.google.com/run/docs/execute/jobs-on-schedule
