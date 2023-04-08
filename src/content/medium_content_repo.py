@@ -8,9 +8,6 @@ import utility.text_utils as text_utils
 import media.image_creator as image_creator
 import ai.gpt as gpt
 import json
-import content.fb_content_repo as fb_content_repo
-import content.twitter_content_repo as twitter_content_repo
-import content.linkedin_content_repo as linkedin_content_repo
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 
 def post_to_medium():

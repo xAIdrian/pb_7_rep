@@ -5,6 +5,7 @@ import os
 sys.path.append("../src")
 
 import ai.gpt as gpt
+import appsecrets
 import storage.dropbox_storage as dropbox_storage
 import content.ig_content_repo as ig_content_repo
 import content.fb_content_repo as fb_content_repo
@@ -13,6 +14,7 @@ import content.youtube_content_repo as youtube_content_repo
 import content.linkedin_content_repo as linkedin_content_repo
 import content.medium_content_repo as medium_content_repo
 import media.video_converter as video_converter
+import libs.tiktok_uploader as tiktok_uploader
 
 CLIENT_SECRET_FILE='ai-content-machine-d8dcc1434069.json'
 
@@ -24,6 +26,13 @@ if __name__ == '__main__':
     # twitter_content_repo.post_tweet()
     # medium_content_repo.post_to_medium()
     # linkedin_content_repo.post_to_linkedin()
+
+    tiktok_uploader.uploadVideo(
+        session_id=appsecrets.TIKTOK_SESSION_ID,
+        video=os.path.join('src', 'output_downloads', 'when-you-stop-it-all-goes-back-to-zero.mp4'),
+        title='You will never believe this',
+        tags=[]
+    )
 
     dropbox_storage.bulk_download_prompts()
     # Get newest video from Dropbox and create content

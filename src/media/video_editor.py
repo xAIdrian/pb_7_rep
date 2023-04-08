@@ -10,7 +10,7 @@ import media.image_creator as image_creator
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 import ai.speech_synthesis as speech_synthesis
 import time
-import constants
+# import constants
 
 movies_url = 'https://api.json2video.com/v2/movies'
 
@@ -167,8 +167,8 @@ def create_video_json( image_query, mp3_duration, mp3_remote_path ):
                     "src": image,
                     "duration": scene_duration,
                     "scale": {
-                        "height":constants.VIDEO_IMAGE_HEIGHT,
-                        "width": constants.VIDEO_IMAGE_WIDTH
+                        # "height":constants.VIDEO_IMAGE_HEIGHT,
+                        # "width": constants.VIDEO_IMAGE_WIDTH
                     }
                 }
             ] 
@@ -323,8 +323,8 @@ example_video = {
                     "src": "https://assets.json2video.com/assets/images/london-03.jpg",
                     "duration": 10,
                     "scale": {
-                        "height":constants.VIDEO_IMAGE_HEIGHT,
-                        "width": constants.VIDEO_IMAGE_WIDTH
+                        # "height":constants.VIDEO_IMAGE_HEIGHT,
+                        # "width": constants.VIDEO_IMAGE_WIDTH
                     }
                 }
             ]
