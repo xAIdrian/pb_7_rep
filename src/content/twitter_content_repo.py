@@ -97,7 +97,7 @@ def post_scheduled_tweet( scheduled_datetime_str ):
         post_params = json.loads(post_params_json)
         print(f'TW post params return {post_params}')
     except:
-        print(f'TWTITTER {post_params_json}')
+        print(f'TW {post_params_json}')
         return ''  
             
     tweet = post_params['tweet']

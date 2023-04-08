@@ -23,8 +23,6 @@ toml==0.10.2
 tqdm==4.62.3
 urllib3==1.26.7
 Werkzeug==2.0.2
-# this needs to be updated to the latest version of youtube-dl using github master
-git+https://github.com/ytdl-org/youtube-dl.git@master#egg=youtube-dl
 whisper.ai==1.0.0.1
 dropbox==11.36.0
 azure-cognitiveservices-speech==1.25.0

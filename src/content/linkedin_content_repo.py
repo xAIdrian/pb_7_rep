@@ -2,6 +2,7 @@ import sys
 import os
 sys.path.append("../src")
 
+import json
 import requests
 import domain.linkedin_auth as li_auth
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
@@ -13,7 +14,7 @@ def get_author_from_user(headers):
     '''
     response = requests.get('https://api.linkedin.com/v2/me', headers = headers)
     user_info = response.json()
-    print(f'LINKEDIN userinfo {user_info}')
+    print(f'LI userinfo {user_info}')
     urn = user_info['id']
     return f'urn:li:person:{urn}'
 
@@ -72,6 +73,16 @@ def post_linkedin_link_message():
 
 def post_linkedin_user_message( scheduled_datetime_str ):
     #get post from firebase
+    post_params_json = firebase_storage_instance.get_specific_post(
+        PostingPlatform.LINKEDIN, 
+        scheduled_datetime_str
+    )
+    try:
+        post_params = json.loads(post_params_json)
+        print(f'LI post params return {post_params}')
+    except:
+        print(f'LI {post_params_json}')
+        return '' 
 
     credentials = os.path.join('src', 'linkedin_creds.json')
     access_token = li_auth.auth(credentials) # Authenticate the API
@@ -86,7 +97,7 @@ def post_linkedin_user_message( scheduled_datetime_str ):
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {
                 "shareCommentary": {
-                    "text": 'sample test message'
+                    "text": post_params['message']
                 },
                 "shareMediaCategory": "NONE"
             }
@@ -101,12 +112,22 @@ def post_linkedin_user_message( scheduled_datetime_str ):
         req_json=post_data, 
         type='POST'
     )
-    print(f'LINKEDIN {result}')
+    print(f'LI result {result}')
     return result
 
 def post_to_linkedin(): 
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.LINKEDIN, 
         post_linkedin_user_message,
-        True # in testing mode, will post
+        is_true=True # in testing mode, will post
     )
+
+def schedule_linkedin_post( text ):
+
+    payload = dict()
+    payload['text'] = text
+    result = firebase_storage_instance.upload_scheduled_post(
+        PostingPlatform.LINKEDIN, 
+        payload
+    )
+    print(f'LinkedIn scheduled!\n{result}') 

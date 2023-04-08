@@ -3,6 +3,7 @@ import os
 sys.path.append("../src")
 
 import dropbox
+import utility.file_utils as file_utils
 from dropbox.exceptions import AuthError
 from storage.firebase_storage import firebase_storage_instance
 import appsecrets
@@ -11,6 +12,7 @@ import requests
 DB_FOLDER_READY = "/ShortVideoReady"
 DB_FOLDER_SCHEDULED = '/ShortVideoScheduled'
 DB_FOLDER_POSTED = '/ShortVideoPosted'
+DB_FOLDER_INPUT_PROMPTS = '/InputPrompts'
 
 def initialize_dropbox():
         """Create a connection to Dropbox."""
@@ -45,30 +47,44 @@ def initialize_dropbox():
 
 dbx = initialize_dropbox() 
 
-def get_file_name_from_path( file_path ):
-    # Split the path into a list of directories and the file name
-    directories = file_path.split('/')
-    file_name = None
+def bulk_download_prompts():
+    # Get a list of all the files in the folder
+    result = dbx.files_list_folder(DB_FOLDER_INPUT_PROMPTS)
 
-    # Traverse the directories list backwards to find the last .mp4 file
-    for directory in reversed(directories):
-        if directory.endswith('.mp4'):
-            file_name = directory
-            break
+    # Loop through the list of files and download each one
+    for entry in result.entries:
+        # Create a local file path to save the downloaded file to
+        local_path = os.path.join('src','input_prompts', entry.name)
 
-    # Check if a .mp4 file was found
-    if file_name is None:
-        print("There is no .mp4 file in the path.")
-        return ''
-    else:
-        print("The last .mp4 file name is:", file_name)
-        return file_name
+        download_if_available(
+            entry.path_lower,
+            local_path,
+            download_from_dropbox
+        )
     
-def download_file_to_local_path( remote_file_path):
+def download_file_to_local_path( remote_file_path ):
 
-    local_download_path = os.path.join('src', 'output_downloads', get_file_name_from_path(remote_file_path))
+    local_download_path = os.path.join(
+        'src', 
+        'output_downloads', 
+        file_utils.get_file_name_from_video_path(remote_file_path)
+    )
+    return download_if_available(
+        remote_file_path,
+        local_download_path,
+        download_from_dropbox
+    )
+        
+def download_from_dropbox( remote_file_path, local_download_path ):
+    print('Downloading from dropbox...')
+    with open(local_download_path, "wb") as f:
+        metadata, res = dbx.files_download(path=remote_file_path)
+        f.write(res.content)
+    print(f"Downloaded from '{remote_file_path}' downloaded to '{local_download_path}'")
+    return local_download_path
+
+def download_if_available( remote_file_path, local_download_path, dl_func ):
     # Check if this is the earliest uploaded video file
-    
     if (remote_file_path is None):
         print("No files found") 
         return ''
@@ -76,13 +92,7 @@ def download_file_to_local_path( remote_file_path):
         print("File already downloaded")        
         return local_download_path
     else:
-        # Download the earliest uploaded video file
-        print('Downloading from dropbox...')
-        with open(local_download_path, "wb") as f:
-            metadata, res = dbx.files_download(path=remote_file_path)
-            f.write(res.content)
-        print(f"Earliest uploaded video file '{remote_file_path}' downloaded to '{local_download_path}'")
-        return local_download_path
+        return dl_func(remote_file_path, local_download_path)
 
 def get_streaming_download_url( file_path ):
     settings = dropbox.sharing.SharedLinkSettings(

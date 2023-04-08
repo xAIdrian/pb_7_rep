@@ -136,6 +136,7 @@ src/appsecrets.py
 src/yt_access_token.pickle
 
 src/output_downloads/
+src/input_prompts/
 src/outputs/
 
 .idea/
