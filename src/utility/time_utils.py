@@ -24,8 +24,8 @@ def is_current_posting_time_within_window( earliest_scheduled_datetime_str ):
     scheduled_time=datetime.fromisoformat(formatted_iso)
     current_time=datetime.now()
     
-    lower_bound=scheduled_time - timedelta(minutes=20)
-    upper_bound=scheduled_time + timedelta(minutes=20)
+    lower_bound=scheduled_time - timedelta(minutes=10)
+    upper_bound=scheduled_time + timedelta(minutes=10)
 
     print(f'Checking if {current_time} is between {lower_bound} and {upper_bound}')
     if lower_bound < current_time < upper_bound:

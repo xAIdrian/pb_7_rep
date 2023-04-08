@@ -17,6 +17,7 @@ import media.video_editor as video_editor
 from ai.gpt_write_story import create_story_and_scenes
 import utility.scheduler as scheduler
 import media.video_converter as video_converter
+import utility.time_utils as time_utils
 
 # Build the YouTube API client
 API_SERVICE_NAME = "youtube"
@@ -49,7 +50,6 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
         os.path.join('src', 'input_prompts', 'youtube_title.txt'),
         feedin_source_file=summary_file
     )
-    title = title.replace('"', '')
 
     description = gpt3.prompt_to_string_from_file(
         prompt_source_file=os.path.join('src', 'input_prompts', 'youtube_description.txt'),
@@ -57,8 +57,8 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
     )
 
     upload_file_path = dropbox_storage.download_file_to_local_path(db_remote_path)
-
     posting_time = scheduler.get_best_posting_time(PostingPlatform.YOUTUBE)
+
     request = youtube.videos().insert(
         part="snippet,status",
         body={
@@ -79,7 +79,15 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
     )
     try:
         response = request.execute()
-        print(f'YT posting scheduled!\n{response}')    
+        print(f'YT posting scheduled!\n{response}')   
+        firebase_storage_instance.upload_scheduled_post(
+            PostingPlatform.YOUTUBE,
+            payload = {
+                "title": title,
+                "description": description,
+                "video_url": upload_file_path
+            }
+        ) 
     except Exception as e:    
         print(e)
         response = e
@@ -139,7 +147,7 @@ def get_youtube_credentials():
     print(f'Youtube authentication complete with creds: {credentials}')
     return credentials
 
-def post_scheduled_upload_video_to_youtube():
+def post_previously_scheduled_youtube_video():
     '''
     # Sample Python code for youtube.videos.insert
     # NOTES:
@@ -157,70 +165,16 @@ def post_scheduled_upload_video_to_youtube():
     if (earliest_scheduled_datetime_str == ''): return 'no posts scheduled'
     print(f'YT last posted time: {earliest_scheduled_datetime_str}')
     
-    # ready_to_post = time_utils.is_current_posting_time_within_window(earliest_scheduled_datetime_str)
-    # if (ready_to_post):  
-    if (True): 
-        post_params_json = firebase_storage_instance.get_specific_post(
+    ready_to_post = time_utils.is_current_posting_time_within_window(earliest_scheduled_datetime_str)
+    if (ready_to_post):  
+        response = firebase_storage_instance.delete_post(
             PostingPlatform.YOUTUBE, 
             earliest_scheduled_datetime_str
         )
-        try:
-            post_params = json.loads(post_params_json)
-            if (post_params['remote_video_url'] == 'no movie url'):
-                #recursive deletion if we do not have a movie url
-                firebase_storage_instance.delete_post(
-                    PostingPlatform.YOUTUBE,
-                    earliest_scheduled_datetime_str
-                )
-                post_scheduled_upload_video_to_youtube()
-
-            print('\nYOUTUBE post_params: ', post_params, '\n')
-        except:
-            print('YT error parsing post params')
-            print('post_params_json: ', post_params_json)
-            return 'Error parsing post params'
-
-        upload_file_path = video_converter.get_downloaded_video_local_path(
-            post_params['remote_video_url']
-        )
-        youtube = googleapiclient.discovery.build(
-            API_SERVICE_NAME, 
-            API_VERSION, 
-            credentials = get_youtube_credentials()
-        )
-
-        request = youtube.videos().insert(
-            part="snippet,status",
-            body={
-                "snippet": {
-                    "title": post_params['title'],
-                    "description": post_params['description'],
-                    "categoryId": "17"
-                },
-                "status": {
-                    "privacyStatus": "private",
-                    "embeddable": True,
-                    "license": "youtube",
-                    "publicStatsViewable": True,
-                    "publishAt": earliest_scheduled_datetime_str
-                }
-            },
-            media_body=MediaFileUpload(upload_file_path)
-        )
-        try:
-            response = request.execute()
-            print(f'YT success {response}')
-
-            firebase_storage_instance.delete_post(
-                PostingPlatform.YOUTUBE, 
-                earliest_scheduled_datetime_str
-            )
-        except Exception as e:    
-            response = e
         return response
 
 def post_youtube_video():    
-    response = post_scheduled_upload_video_to_youtube()
+    response = post_previously_scheduled_youtube_video()
     print(f'Youtube response {response}') 
 
 def process_initial_video_download_transcript(db_remote_path, should_summarize=True):

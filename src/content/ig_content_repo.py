@@ -9,6 +9,7 @@ import media.image_creator as image_creator
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 import json
 import storage.dropbox_storage as dropbox_storage
+from storage.dropbox_storage import DB_FOLDER_REFORMATTED
 import media.video_converter as video_converter
 
 def optimize_video_for_reels_url(firebase_params):
@@ -16,7 +17,7 @@ def optimize_video_for_reels_url(firebase_params):
     optimized_local_path = video_converter.optimize_video_for_reels(local_video_download)
     optimized_url = dropbox_storage.upload_file_for_sharing_url(
         optimized_local_path, 
-        '/ShortVideoReformatted/' + os.path.basename(optimized_local_path)
+        DB_FOLDER_REFORMATTED + '/' + os.path.basename(optimized_local_path)
     )
     return optimized_url
 
@@ -99,6 +100,7 @@ def publish_image( media_url, post_params, firebase_object):
 
     post_response = make_api_call(url=media_url, req_params=post_params, type='POST')
     post_id = post_response['json_data']['id']
+    instagram_user_id=post_params['instagram_user_id']
 
     publish_url = f'https://graph.facebook.com/v15.0/{instagram_user_id}/media_publish'
     publish_params = {
@@ -187,8 +189,7 @@ def publish_ig_media( mediaObjectId, params ) :
 def post_ig_media_post():
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.INSTAGRAM,
-        post_scheduled_ig_post,
-        is_test=True
+        post_scheduled_ig_post
     )
 
 def schedule_ig_image_post( caption, image_query ):

@@ -11,7 +11,7 @@ def optimize_video_for_reels( input_file ):
     scale_filter = "scale=-2:1080"  # adjust the height to 1080 pixels and maintain the aspect ratio
 
     cmd = [
-        "ffmpeg",
+        "ffmpeg", "-y",
         "-i", input_file,
         "-c:v", "libx264",
         "-brand", "mp42",
@@ -41,7 +41,7 @@ def convert_local_video_to_mp3(input_file):
 
     # Run FFMPEG command to convert mp4 to mp3
     subprocess.run([
-        "ffmpeg", 
+        "ffmpeg", "-y", 
         "-i", input_file, 
         "-vn", 
         "-ar", "44100", 

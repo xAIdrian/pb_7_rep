@@ -117,7 +117,7 @@ def generate_text_prompt(
         prompt_source, 
         post_num, 
         upload_func,
-        should_polish = True 
+        should_polish = False 
     ):
     
     for num in range(post_num):

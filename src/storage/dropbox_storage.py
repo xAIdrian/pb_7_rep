@@ -10,9 +10,9 @@ import appsecrets
 import requests
 
 DB_FOLDER_READY = "/ShortVideoReady"
-DB_FOLDER_SCHEDULED = '/ShortVideoScheduled'
-DB_FOLDER_POSTED = '/ShortVideoPosted'
+DB_FOLDER_SCHEDULED = '/ShortVideoScheduledAndUploaded'
 DB_FOLDER_INPUT_PROMPTS = '/InputPrompts'
+DB_FOLDER_REFORMATTED = '/ShortVideoReformatted'
 
 def initialize_dropbox():
         """Create a connection to Dropbox."""
