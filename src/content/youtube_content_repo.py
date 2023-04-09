@@ -18,6 +18,7 @@ from ai.gpt_write_story import create_story_and_scenes
 import utility.scheduler as scheduler
 import media.video_converter as video_converter
 import utility.time_utils as time_utils
+import utility.text_utils as text_utils
 
 # Build the YouTube API client
 API_SERVICE_NAME = "youtube"
@@ -50,6 +51,7 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
         os.path.join('src', 'input_prompts', 'youtube_title.txt'),
         feedin_source_file=summary_file
     )
+    title = text_utils.groom_title(title)
 
     description = gpt3.prompt_to_string_from_file(
         prompt_source_file=os.path.join('src', 'input_prompts', 'youtube_description.txt'),
@@ -89,7 +91,7 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
             }
         ) 
     except Exception as e:    
-        print(e)
+        print(f'Youtube error {e}')
         response = e
     return response
 

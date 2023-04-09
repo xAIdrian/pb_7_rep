@@ -5,5 +5,3 @@ README.md
 *.pyd
 __pycache__
 .pytest_cache
-src/token.json
-src/google_desktop_client.json

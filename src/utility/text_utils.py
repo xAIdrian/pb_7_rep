@@ -34,6 +34,12 @@ def groom_title(input_string):
     pattern = r"#\s?H1[-:]?\s?|#\s?|\s?<h1>\s?|</h1>|\s?<H1>\s?|</H1>"
     # this pattern removes all whitespaces pattern = r"#\s?H1[-:]?\s?|#\s?|\s?<h1>\s?|</h1>|\s?"
     title = re.sub(pattern, "", input_string)
+    title = title.replace('"', '').replace(':', '')
+
+    # Remove any invalid characters from the title
+    title = re.sub(r'[^\w\s-]', '', title).strip()
+    # Make sure the title is no longer than 100 characters
+    title = title[:100]
 
     print(f'formatted title: {title}')
     return title
@@ -48,3 +54,11 @@ def groom_body(input_string):
     input_string = input_string.replace("<h2>", "<p></p><h2>")  
     
     return input_string    
+
+def format_description(description):
+    # Remove any invalid characters from the description
+    description = re.sub(r'[^\w\s.,!?:;()-]', '', description).strip()
+    # Make sure the description is no longer than 5000 characters
+    description = description[:5000]
+    return description
+  
