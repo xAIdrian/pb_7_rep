@@ -51,12 +51,13 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
         os.path.join('src', 'input_prompts', 'youtube_title.txt'),
         feedin_source_file=summary_file
     )
-    title = text_utils.groom_title(title)
+    title = text_utils.format_yt_title(title)
 
     description = gpt3.prompt_to_string_from_file(
         prompt_source_file=os.path.join('src', 'input_prompts', 'youtube_description.txt'),
         feedin_source_file=summary_file
     )
+    description = text_utils.format_yt_description(description)
 
     upload_file_path = dropbox_storage.download_file_to_local_path(db_remote_path)
     posting_time = scheduler.get_best_posting_time(PostingPlatform.YOUTUBE)

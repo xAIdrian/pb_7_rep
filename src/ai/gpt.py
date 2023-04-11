@@ -88,7 +88,7 @@ def generate_video_with_prompt(
         prompt_source, 
         db_remote_path, 
         upload_func,
-        should_polish = True 
+        should_polish = False 
     ):
     """
     Convert a single file of language to another using chat GPT as a video

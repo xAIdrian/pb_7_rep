@@ -31,9 +31,9 @@ if __name__ == '__main__':
     local_joined_path = os.path.join('src','output_downloads')
     db_video_entry = dropbox_storage.get_earliest_ready_short_video()
 
-    db_remote_path = db_video_entry.path_display
-
-    if (db_remote_path is not None and db_remote_path != ''):
+    if (db_video_entry is not None):
+        db_remote_path = db_video_entry.path_display
+        
         dropbox_storage.bulk_download_prompts()
 
         local_video_path = dropbox_storage.download_file_to_local_path(db_remote_path)
