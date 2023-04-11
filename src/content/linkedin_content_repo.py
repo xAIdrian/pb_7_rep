@@ -97,7 +97,7 @@ def post_linkedin_user_message( scheduled_datetime_str ):
         "specificContent": {
             "com.linkedin.ugc.ShareContent": {
                 "shareCommentary": {
-                    "text": post_params['message']
+                    "text": post_params['text']
                 },
                 "shareMediaCategory": "NONE"
             }
@@ -118,9 +118,8 @@ def post_linkedin_user_message( scheduled_datetime_str ):
 def post_to_linkedin(): 
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.LINKEDIN, 
-        post_linkedin_user_message,
-        is_true=True # in testing mode, will post
-    )
+        post_linkedin_user_message
+    ) 
 
 def schedule_linkedin_post( text ):
 

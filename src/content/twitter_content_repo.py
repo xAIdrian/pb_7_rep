@@ -110,8 +110,7 @@ def post_scheduled_tweet( scheduled_datetime_str ):
 def post_tweet(): 
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.TWITTER, 
-        post_scheduled_tweet,
-        is_test=True
+        post_scheduled_tweet
     )
 
 def schedule_video_tweet( tweet, video_remote_url ):

@@ -13,8 +13,7 @@ from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 def post_to_medium():
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.MEDIUM,
-        post_medium_blog_article,
-        is_test=True
+        post_medium_blog_article
     )
 
 def get_user_details():
@@ -55,7 +54,7 @@ def post_medium_blog_article( schedule_datetime_str ):
         "Accept-Charset": "utf-8"
     }
     data = {
-        "title": title,
+        "title": title.replace('"', ''),
         "content": post_params['content'],
         "contentFormat": "html",
         "publishStatus": "public",
@@ -95,8 +94,6 @@ def schedule_medium_article(blog):
         payload = dict()
         payload['title'] = title
         payload['content'] = body
-        payload['image'] = dict()
-        payload['image']['url'] = image_src
         
         result = firebase_storage_instance.upload_scheduled_post(
             PostingPlatform.MEDIUM, 
@@ -105,3 +102,18 @@ def schedule_medium_article(blog):
         print(result)
     except Exception as e:
         print(f'Something went wrong parsing blog {e}')        
+
+#construct and save address of uploaded blog
+                # if (result):
+                #     base_path = "https://www.caregivermodern.com/blogs/caregiver-help-how-to/"
+                #     updated_title = new_article.title.replace(' ', '-').replace('\'', '').replace(',','').replace('.', '').replace('"', '').replace(':','')
+                #     combined_url = base_path + updated_title
+                        
+                #     twitter_content_repo.post_blog_promo_tweet(
+                #         blog_title=new_article.title,
+                #         ref_url=combined_url
+                #     )
+                #     fb_content_repo.post_blog_promo(
+                #         blog_title=new_article.title,
+                #         ref_url=combined_url
+                #     )        

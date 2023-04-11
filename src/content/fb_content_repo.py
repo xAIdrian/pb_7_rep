@@ -118,8 +118,7 @@ def post_to_facebook():
     '''
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.FACEBOOK,
-        post_scheduled_fb_post,
-        is_test=True
+        post_scheduled_fb_post
     )
 
 def schedule_fb_post( caption, image_query ):

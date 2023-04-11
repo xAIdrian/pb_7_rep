@@ -5,8 +5,8 @@ import os
 sys.path.append("../src")
 
 import ai.gpt as gpt
-import appsecrets
 import storage.dropbox_storage as dropbox_storage
+from storage.dropbox_storage import DB_FOLDER_READY, DB_FOLDER_SCHEDULED
 import content.ig_content_repo as ig_content_repo
 import content.fb_content_repo as fb_content_repo
 import content.twitter_content_repo as twitter_content_repo
@@ -14,37 +14,30 @@ import content.youtube_content_repo as youtube_content_repo
 import content.linkedin_content_repo as linkedin_content_repo
 import content.medium_content_repo as medium_content_repo
 import media.video_converter as video_converter
-import libs.tiktok_uploader as tiktok_uploader
 
 CLIENT_SECRET_FILE='ai-content-machine-d8dcc1434069.json'
 
 # Begin the running of our application
 if __name__ == '__main__':
     # Quickly process our post calls
-    # ig_content_repo.post_ig_media_post()
-    # fb_content_repo.post_to_facebook()
-    # twitter_content_repo.post_tweet()
-    # medium_content_repo.post_to_medium()
-    # linkedin_content_repo.post_to_linkedin()
+    ig_content_repo.post_ig_media_post()
+    fb_content_repo.post_to_facebook()
+    twitter_content_repo.post_tweet()
+    medium_content_repo.post_to_medium()
+    linkedin_content_repo.post_to_linkedin()
+    youtube_content_repo.post_previously_scheduled_youtube_video()
 
-    tiktok_uploader.uploadVideo(
-        session_id=appsecrets.TIKTOK_SESSION_ID,
-        video=os.path.join('src', 'output_downloads', 'when-you-stop-it-all-goes-back-to-zero.mp4'),
-        title='You will never believe this',
-        tags=[]
-    )
-
-    dropbox_storage.bulk_download_prompts()
     # Get newest video from Dropbox and create content
     local_joined_path = os.path.join('src','output_downloads')
     db_video_entry = dropbox_storage.get_earliest_ready_short_video()
 
-    db_remote_path = db_video_entry.path_display
+    if (db_video_entry is not None):
+        db_remote_path = db_video_entry.path_display
+        
+        dropbox_storage.bulk_download_prompts()
 
-    if (db_remote_path is not None and db_remote_path != ''):
-        local_audio_path = video_converter.local_video_to_mp3(
-            dropbox_storage.download_file_to_local_path(db_remote_path)
-        )
+        local_video_path = dropbox_storage.download_file_to_local_path(db_remote_path)
+        local_audio_path = video_converter.local_video_to_mp3(local_video_path)
         transcript_path = gpt.mp3_to_transcript(local_audio_path)
         summary_output_path = gpt.transcript_to_summary(transcript_path)
 
@@ -53,38 +46,41 @@ if __name__ == '__main__':
             db_remote_path=db_remote_path
         )
 
+        # We are setting the new remote file path ahead of the move because we want to post
+        # from "Scheduled" folder and move the video out of "Ready" ASAP
+        db_remote_scheduled_path=DB_FOLDER_SCHEDULED + '/' + os.path.basename(db_remote_path)
+
         # Instagram Reels
         gpt.generate_video_with_prompt(
             prompt_source=os.path.join('src', 'input_prompts', 'instagram.txt'),
-            db_remote_path=db_remote_path,
+            db_remote_path=db_remote_scheduled_path,
             upload_func=ig_content_repo.schedule_ig_video_post
         )
 
         # Facebook Page & Personal
         gpt.generate_video_with_prompt(
             prompt_source=os.path.join('src', 'input_prompts', 'facebook.txt'),
-            db_remote_path=db_remote_path,
+            db_remote_path=db_remote_scheduled_path,
             upload_func=fb_content_repo.schedule_fb_video_post
         )
 
         # Twitter 
         gpt.generate_video_with_prompt(
             prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
-            db_remote_path=db_remote_path,
+            db_remote_path=db_remote_scheduled_path,
             upload_func=twitter_content_repo.schedule_video_tweet
         )
         gpt.generate_text_prompt(
             prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
             post_num=8,
-            upload_func=twitter_content_repo.schedule_tweet,
-            should_polish=True
+            upload_func=twitter_content_repo.schedule_tweet
         )
 
         #LinkedIn
         gpt.generate_text_prompt(
             prompt_source=os.path.join('src', 'input_prompts', 'linkedin.txt'),
             post_num=1,
-            upload_func=linkedin_content_repo.schedule_post,
+            upload_func=linkedin_content_repo.schedule_linkedin_post,
             should_polish=True
         )
    
@@ -96,6 +92,6 @@ if __name__ == '__main__':
         )
 
         # Move file and additional cleanup
-        dropbox_storage.move_file(db_remote_path, '/ContentUploaded/' + os.path.basename(db_remote_path))
+        dropbox_storage.move_file(db_remote_path, DB_FOLDER_SCHEDULED + '/' + os.path.basename(db_remote_path))
         print('Finished and completed')
     
