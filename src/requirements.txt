@@ -22,7 +22,7 @@ toml==0.10.2
 tqdm==4.62.3
 urllib3==1.26.7
 Werkzeug==2.0.2
-whisper.ai==1.0.0.1
+openai-whisper==20230314
 dropbox==11.36.0
 azure-cognitiveservices-speech==1.25.0
 oauthlib==3.2.2 
@@ -36,3 +36,4 @@ flask==2.0.2
 gspread>=5.0.0
 replicate==0.5.0
 praw==7.7.0
+requests-toolbelt==0.10.1

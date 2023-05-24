@@ -1,7 +1,36 @@
-# AI Content Machine 
-A script to turn one YouTube video into content. Uploads automatically.
-
 ![57f43290c988cd447f8e5a5c3e6a09ad](https://user-images.githubusercontent.com/7444521/222048539-cd7220fe-ec96-45cc-985a-d4027c35b203.jpg)
+# AI Content Machine
+
+AI Content Machine is a Python application that automates the process of generating and scheduling content for various social media platforms. The application uses Google Cloud Run Scheduler to check for uploaded videos in Dropbox, generates a transcript using the Whisper API, and uses OpenAI to generate content for LinkedIn, Facebook, Instagram, Medium, Twitter, and YouTube. The content is then scheduled using Firebase Realtime Database.
+
+## Dependencies
+
+The application uses the following libraries and APIs:
+
+- Google Cloud Run Scheduler
+- Dropbox API
+- Whisper API
+- OpenAI API
+- Firebase Realtime Database
+- Python libraries: os, sys
+
+## Modules
+
+The application is divided into several modules:
+
+- `ai.gpt`: Handles the generation of content using OpenAI.
+- `storage.dropbox_storage`: Handles interactions with Dropbox.
+- `content.*_content_repo`: Each of these modules handles the generation and scheduling of content for a specific platform (Instagram, Facebook, Twitter, YouTube, LinkedIn, Medium).
+- `media.video_converter`: Handles the conversion of video files to different formats.
+
+## Running the Application
+
+To run the application after cloning the repository, follow these steps:
+
+1. Navigate to the root directory of the project.
+2. Run the main Python script with the command `python main.py`.
+
+
 
 |           Dependencies               |         Install Lib:                         |
 | :----------------------------------------- | :------------------------------ |
@@ -30,29 +59,19 @@ https://github.com/nhorvath/Pyrebase4/blob/master/pyrebase/pyrebase.py
 https://github.com/openai/openai-quickstart-python
 ```bash
 # run with each new terminal
-$ python -m venv venv
-$ & c:/Users/Infinix/Developer/seven_contents_by_ai/venv/Scripts/Activate.ps1
+$ python -m venv venv && source venv/bin/activate
 # only run first time
 $ pip install -r requirements.txt
 $ cp .env.example .env
 ```
 
 Run this every time we work with our project:
-'. venv\scripts\activate  '
-
-Use this to start flask and set the environment variable
-```
-set FLASK_APP=hello.py
-$env:FLASK_APP = "hello.py"
-flask run
-```
+`. venv\scripts\activate`
 
 ### Here are the commands we're using to get into a gcloud instance:
 ```
-docker build --tag seven_contents_by_ai_docker_flamingo . 
-docker tag seven_contents_by_ai_docker_flamingo gcr.io/ai-content-machine/seven_contents_by_ai_docker_flamingo
-docker run gcr.io/ai-content-machine/seven_contents_by_ai_docker_flamingo 
-docker push gcr.io/ai-content-machine/seven_contents_by_ai_docker_flamingo
+gcloud init
+gcloud run deploy
 ```
 for mac:
 ```

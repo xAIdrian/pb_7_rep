@@ -136,25 +136,25 @@ def schedule_fb_post( caption, image_query ):
     print('FB upload scheduled post result' + str(result))
     return result
     
-def post_blog_promo( blog_title, ref_url ):
-    short_url = url_shortener.shorten_tracking_url(
-        url_destination=ref_url,
-        slashtag='',
-        platform=PostingPlatform.FACEBOOK,
-        campaign_medium='blog-reference',
-        campaign_name=blog_title
-    )
-    message=gpt.link_prompt_to_string(
-        prompt_source_file=os.path.join("src", "input_prompts", "facebook_blog_ref.txt"),
-        feedin_title=blog_title,
-        feedin_link=short_url
-    )
-    payload = {
-        'link': short_url,
-        'message': message, 
-        'published' : True
-    }
-    make_fb_feed_call_with_token(payload)  
+# def post_blog_promo( blog_title, ref_url ):
+#     short_url = url_shortener.shorten_tracking_url(
+#         url_destination=ref_url,
+#         slashtag='',
+#         platform=PostingPlatform.FACEBOOK,
+#         campaign_medium='blog-reference',
+#         campaign_name=blog_title
+#     )
+#     message=gpt.link_prompt_to_string(
+#         prompt_source_file=os.path.join("src", "input_prompts", "facebook_blog_ref.txt"),
+#         feedin_title=blog_title,
+#         feedin_link=short_url
+#     )
+#     payload = {
+#         'link': short_url,
+#         'message': message, 
+#         'published' : True
+#     }
+#     make_fb_feed_call_with_token(payload)  
 
 def schedule_fb_video_post( caption, db_remote_path ):    
     payload = {

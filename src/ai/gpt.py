@@ -25,7 +25,7 @@ def gpt_3 (prompt):
         model="text-davinci-003",
         prompt=prompt,
         temperature=1.2,
-        max_tokens=1500,
+        max_tokens=2500,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -48,13 +48,16 @@ def mp3_to_transcript(mp3_file_path):
 def transcript_to_summary(transcript_file_path):
     print('Processing transcript to summary')
     alltext = utils.open_file(transcript_file_path)
+    print("🚀 ~ file: gpt.py:51 ~ alltext:", alltext)
     chunks = textwrap.wrap(alltext, 2500)
     result = list()
     count = 0
     for chunk in chunks:
+        print("🚀 ~ file: gpt.py:56 ~ chunk:", chunk)
         count = count + 1
         file_path_input = os.path.join("src", "input_prompts", "summary.txt")
         prompt = utils.open_file(file_path_input).replace('<<SUMMARY>>', chunk)
+        print("🚀 ~ file: gpt.py:58 ~ prompt:", prompt)
         prompt = prompt.encode(encoding='ASCII',errors='ignore').decode()
         summary = gpt_3(prompt)
         print('\n\n\n', count, 'out of', len(chunks), 'Compressions', ' : ', summary)
@@ -78,11 +81,11 @@ def get_gpt_generated_text( prompt_source ):
     applied_prompt = utils.open_file(prompt_source).replace('<<FEED>>', feed_source)
     return gpt_3(applied_prompt)
 
-def get_polished_generated_text ( text ):
-    # get the first draft of the generated text
-    feedin_source_file = os.path.join("src", "input_prompts", "polish.txt")
-    applied_prompt = utils.open_file(feedin_source_file).replace('<<FEED>>', text)
-    return gpt_3(applied_prompt)
+# def get_polished_generated_text ( text ):
+#     # get the first draft of the generated text
+#     feedin_source_file = os.path.join("src", "input_prompts", "polish.txt")
+#     applied_prompt = utils.open_file(feedin_source_file).replace('<<FEED>>', text)
+#     return gpt_3(applied_prompt)
 
 def generate_video_with_prompt( 
         prompt_source, 
@@ -108,9 +111,6 @@ def generate_video_with_prompt(
     print(f'Video prompt {prompt_source}')
     gpt_text = get_gpt_generated_text(prompt_source)
 
-    if (should_polish):
-        gpt_text = get_polished_generated_text(gpt_text)
-
     upload_func(gpt_text, db_remote_path)
 
 def generate_text_prompt( 
@@ -123,9 +123,6 @@ def generate_text_prompt(
     for num in range(post_num):
         print(f'Processing #{num+1} of {prompt_source}')
         gpt_text = get_gpt_generated_text(prompt_source)
-
-        if (should_polish):
-            gpt_text = get_polished_generated_text(gpt_text)
 
         upload_func(gpt_text)
 
