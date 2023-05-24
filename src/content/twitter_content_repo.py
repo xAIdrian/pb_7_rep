@@ -64,20 +64,20 @@ def update_tweet_with_image(url, tweet):
         print("Unable to download image")
         return None
     
-def post_blog_promo_tweet( blog_title, ref_url ):
-    short_url = url_shortener.shorten_tracking_url(
-        url_destination=ref_url,
-        slashtag='',
-        platform=PostingPlatform.TWITTER,
-        campaign_medium='blog-reference',
-        campaign_name=blog_title
-    )
-    text=gpt.link_prompt_to_string(
-        prompt_source_file=os.path.join("src", "input_prompts", "twitter_blog_ref.txt"),
-        feedin_title=blog_title,
-        feedin_link=short_url
-    )
-    update_tweet(text)
+# def post_blog_promo_tweet( blog_title, ref_url ):
+#     short_url = url_shortener.shorten_tracking_url(
+#         url_destination=ref_url,
+#         slashtag='',
+#         platform=PostingPlatform.TWITTER,
+#         campaign_medium='blog-reference',
+#         campaign_name=blog_title
+#     )
+#     text=gpt.link_prompt_to_string(
+#         prompt_source_file=os.path.join("src", "input_prompts", "twitter_blog_ref.txt"),
+#         feedin_title=blog_title,
+#         feedin_link=short_url
+#     )
+#     update_tweet(text)
 
 def post_scheduled_tweet( scheduled_datetime_str ):
     '''

@@ -8,14 +8,12 @@ import utility.time_utils as time_utils
 # posts 64 times daily
 
 linkedin_times_array = [
-    '2023-03-01T09:00:00', #9am
     '2023-03-01T12:00:00', #12pm
     '2023-03-01T17:00:00' #5pm
 ]
 # 6 posts daily
 # 2 posts per video
 facebook_times_array = [
-    '2023-03-01T10:00:00', #10am
     '2023-03-01T14:00:00', #2pm
     '2023-03-01T18:00:00'  #6pm
 ]
@@ -24,13 +22,11 @@ facebook_times_array = [
 instagram_times_array = [
     '2023-03-01T10:00:00', #10am
     '2023-03-01T14:00:00', #2pm
-    '2023-03-01T15:00:00', #3pm
     '2023-03-01T18:00:00'  #6pm
 ]
 # 1 video per day
 # 1 video per video
 youtube_times_array = [
-    '2023-03-01T09:00:00', #9am
     '2023-03-01T12:00:00', #12pm
     '2023-03-01T16:00:00', #4pm
 ]
@@ -38,20 +34,11 @@ youtube_times_array = [
 # 1 blog per video
 medium_times_array = [
     '2023-03-01T09:00:00', #9am
-    '2023-03-01T12:00:00', #12pm,
     '2023-03-01T16:00:00', #4pm
 ]
 # 48 tweets daily
 # 16 tweets from 1 video
 twitter_times_array = [
-    '2023-03-01T00:00:00',
-    '2023-03-01T01:00:00', 
-    '2023-03-01T02:00:00', 
-    '2023-03-01T03:00:00', 
-    '2023-03-01T04:00:00', 
-    '2023-03-01T05:00:00', 
-    '2023-03-01T06:00:00', 
-    '2023-03-01T07:00:00', 
     '2023-03-01T08:00:00', 
     '2023-03-01T09:00:00', 
     '2023-03-01T10:00:00', 

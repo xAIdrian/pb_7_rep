@@ -68,7 +68,7 @@ def fetch_personal_access_token() :
         token_params['fb_exchange_token'] = params['access_token'] # access token to get exchange for a long lived token
 
         token_url = params['endpoint_base'] + 'oauth/access_token' # endpoint url
-        token_response = make_api_call( url=token_url, params=token_params, type=params['debug'] ) # make the api call
+        token_response = make_api_call( url=token_url, req_params=token_params, type=params['debug'] ) # make the api call
         
         pretty_dump = json.dumps( token_response['json_data'], indent = 4 ) 
         print(pretty_dump)

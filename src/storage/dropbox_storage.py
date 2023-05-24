@@ -50,11 +50,14 @@ dbx = initialize_dropbox()
 def bulk_download_prompts():
     # Get a list of all the files in the folder
     result = dbx.files_list_folder(DB_FOLDER_INPUT_PROMPTS)
-
+    local_directory = os.path.join('src','input_prompts')
     # Loop through the list of files and download each one
     for entry in result.entries:
         # Create a local file path to save the downloaded file to
-        local_path = os.path.join('src','input_prompts', entry.name)
+        local_path = os.path.join(local_directory, entry.name)
+        # Create the directory if it doesn't exist
+        os.makedirs(local_directory, exist_ok=True)
+        print('Downloading from dropbox...')
 
         download_if_available(
             entry.path_lower,
@@ -76,7 +79,6 @@ def download_file_to_local_path( remote_file_path ):
     )
         
 def download_from_dropbox( remote_file_path, local_download_path ):
-    print('Downloading from dropbox...')
     with open(local_download_path, "wb") as f:
         metadata, res = dbx.files_download(path=remote_file_path)
         f.write(res.content)

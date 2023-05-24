@@ -94,6 +94,7 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
     except Exception as e:    
         print(f'Youtube error {e}')
         response = e
+        
     return response
 
 def scheduled_youtube_video ( remote_video_url ):  
@@ -145,9 +146,8 @@ def get_youtube_credentials():
         credentials = flow.run_local_server()
         
         with open(token_file, 'wb') as token:
-            pickle.dump(credentials, token)
-                    
-    print(f'Youtube authentication complete with creds: {credentials}')
+            pickle.dump(credentials, token)                    
+    # print(f'Youtube authentication complete with creds: {credentials}')
     return credentials
 
 def post_previously_scheduled_youtube_video():
