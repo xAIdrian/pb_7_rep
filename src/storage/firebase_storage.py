@@ -30,7 +30,8 @@ class FirebaseStorage():
     BLOGS_COLLECTION = "posted_blogs" 
 
     # Initializations    
-    firebase = pyrebase.initialize_app(appsecrets.firebase_config)
+    print(appsecrets.FIREBASE_CONFIG)
+    firebase = pyrebase.initialize_app(json.loads(appsecrets.FIREBASE_CONFIG))
     firestore = firebase.database()
     storage = firebase.storage()
 

@@ -132,7 +132,6 @@ src/google_desktop_client.json
 src/google_web_client.json
 src/google_youtube_client.json
 src/linkedin_creds.json
-src/appsecrets.py
 src/yt_access_token.pickle
 
 src/output_downloads/

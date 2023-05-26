@@ -55,6 +55,7 @@ def bulk_download_prompts():
     for entry in result.entries:
         # Create a local file path to save the downloaded file to
         local_path = os.path.join(local_directory, entry.name)
+
         # Create the directory if it doesn't exist
         os.makedirs(local_directory, exist_ok=True)
         print('Downloading from dropbox...')

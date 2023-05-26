@@ -15,8 +15,6 @@ import content.linkedin_content_repo as linkedin_content_repo
 import content.medium_content_repo as medium_content_repo
 import media.video_converter as video_converter
 
-CLIENT_SECRET_FILE='ai-content-machine-d8dcc1434069.json'
-
 # Begin the running of our application
 if __name__ == '__main__':
     # Quickly process our post calls
