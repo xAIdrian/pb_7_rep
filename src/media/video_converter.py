@@ -66,9 +66,9 @@ def convert_local_video_to_mp3(input_file):
     
 def local_video_to_mp3( local_mp4_path ):
     mp3_path = local_mp4_path
-    mp3_path.replace('.mp4', '.mp3')
+    improved_mp3_path = mp3_path.replace('.mp4', '.mp3')
     # Set the FFmpeg command and arguments
-    command = ["ffmpeg", "-y", "-i", local_mp4_path, "-vn", "-acodec", "libmp3lame", "-f", "mp3", mp3_path]
+    command = ["ffmpeg", "-y", "-i", local_mp4_path, "-vn", "-acodec", "libmp3lame", "-f", "mp3", improved_mp3_path]
     subprocess.call(command) # Run the command using subprocess
     print("Conversion complete!")
-    return mp3_path
+    return improved_mp3_path

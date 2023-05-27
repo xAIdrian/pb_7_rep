@@ -25,7 +25,7 @@ def gpt_3 (prompt):
         model="text-davinci-003",
         prompt=prompt,
         temperature=1.2,
-        max_tokens=2500,
+        max_tokens=2000,
         top_p=1,
         frequency_penalty=0,
         presence_penalty=0
@@ -40,7 +40,7 @@ def mp3_to_transcript(mp3_file_path):
     result = model.transcribe(sound, fp16=False, language = 'en')
 
     yttrans = (result['text'])
-    result_path = mp3_file_path + '_transcript.txt'
+    result_path = mp3_file_path.replace('.mp3', '_transcript.txt')
     utils.save_file(result_path, yttrans)
     print(f'saved mp3 transcript: {yttrans}')
     return result_path
@@ -90,8 +90,7 @@ def get_gpt_generated_text( prompt_source ):
 def generate_video_with_prompt( 
         prompt_source, 
         db_remote_path, 
-        upload_func,
-        should_polish = False 
+        upload_func
     ):
     """
     Convert a single file of language to another using chat GPT as a video
@@ -116,8 +115,7 @@ def generate_video_with_prompt(
 def generate_text_prompt( 
         prompt_source, 
         post_num, 
-        upload_func,
-        should_polish = False 
+        upload_func
     ):
     
     for num in range(post_num):
@@ -127,17 +125,20 @@ def generate_text_prompt(
         upload_func(gpt_text)
 
 def prompt_to_string_from_file( prompt_source_file, feedin_source_file ):
+    print("🚀 ~ file: gpt.py:129 ~ prompt_to_string_from_file:", 'prompt_to_string_from_file')
     feed_source = utils.open_file(feedin_source_file)
     appliedprompt = utils.open_file(prompt_source_file).replace('<<FEED>>', feed_source)
     finaltext = gpt_3(appliedprompt)
     return finaltext
 
 def prompt_to_string( prompt_source_file, feedin_source ):
+    print("🚀 ~ file: gpt.py:136 ~ prompt_to_string:", prompt_to_string)
     appliedprompt = utils.open_file(prompt_source_file).replace('<<FEED>>', feedin_source)
     finaltext = gpt_3(appliedprompt)
     return finaltext
 
 def link_prompt_to_string( prompt_source_file, feedin_title, feedin_link ):
+    print("🚀 ~ file: gpt.py:142 ~ link_prompt_to_string:", link_prompt_to_string)
     appliedprompt = utils.open_file(prompt_source_file).replace('<<TITLE>>', feedin_title).replace('<<LINK>>', feedin_link)
     finaltext = gpt_3(appliedprompt)
     return finaltext

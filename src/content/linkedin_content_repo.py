@@ -115,10 +115,11 @@ def post_linkedin_user_message( scheduled_datetime_str ):
     print(f'LI result {result}')
     return result
 
-def post_to_linkedin(): 
+def post_to_linkedin(is_testmode=False): 
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.LINKEDIN, 
-        post_linkedin_user_message
+        post_linkedin_user_message,
+        is_test = is_testmode
     ) 
 
 def schedule_linkedin_post( text ):

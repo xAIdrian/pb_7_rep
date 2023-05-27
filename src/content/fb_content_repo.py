@@ -109,7 +109,7 @@ def post_scheduled_fb_post( scheduled_datetime_str ):
     page_result = post_to_page(post_json_object)
     return page_result
 
-def post_to_facebook():
+def post_to_facebook(is_testmode=False):
     '''
     Method called from main class that creates our endpoint request and makes the API call.
     Also, prints status of uploading the payload.
@@ -118,7 +118,8 @@ def post_to_facebook():
     '''
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.FACEBOOK,
-        post_scheduled_fb_post
+        post_scheduled_fb_post,
+        is_test = is_testmode
     )
 
 def schedule_fb_post( caption, image_query ):

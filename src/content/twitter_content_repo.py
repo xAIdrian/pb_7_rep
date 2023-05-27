@@ -14,6 +14,10 @@ import storage.dropbox_storage as dropbox_storage
 
 def initialize_tweepy():
     # Authenticate to Twitter
+    print("🚀 ~ file: twitter_content_repo.py:18 ~ appsecrets.TWITTER_API_KEY:", appsecrets.TWITTER_API_KEY)
+    print("🚀 ~ file: twitter_content_repo.py:18 ~ appsecrets.TWITTER_API_SECRET:", appsecrets.TWITTER_API_SECRET)
+    print("🚀 ~ file: twitter_content_repo.py:21 ~ appsecrets.TWITTER_API_AUTH_SECRET:", appsecrets.TWITTER_API_AUTH_SECRET)
+    print("🚀 ~ file: twitter_content_repo.py:21 ~ appsecrets.TWITTER_API_AUTH_TOKEN:", appsecrets.TWITTER_API_AUTH_TOKEN)
     auth = tweepy.OAuthHandler(appsecrets.TWITTER_API_KEY, appsecrets.TWITTER_API_SECRET)
     auth.set_access_token(appsecrets.TWITTER_API_AUTH_TOKEN, appsecrets.TWITTER_API_AUTH_SECRET)
 
@@ -36,8 +40,10 @@ def update_tweet( text ):
         return None
 
 def update_tweet_with_video ( db_remote_path, tweet ):
+    print("🚀 ~ file: twitter_content_repo.py:43 ~ db_remote_path:", db_remote_path)
     local_path = dropbox_storage.download_file_to_local_path(db_remote_path)
     with open(local_path, 'rb') as f:
+        print('Uploading twitter video...')
         media = tweepy_api.media_upload(
             filename=os.path.basename(local_path), 
             file=f,
@@ -45,7 +51,8 @@ def update_tweet_with_video ( db_remote_path, tweet ):
             wait_for_async_finalize=True,
             media_category='tweet_video'
         )
-        if (len(tweet) > 275): tweet = 'Exclusive private mentorship is only available TODAY.  Click the link in our bio to instantly learn how you can stop wasting time on dating apps and have a fulfilling dating life!'
+        print('Video uploaded!' + str(media))
+        if (len(tweet) > 275): tweet = 'Exclusive mentorship deal is only available TODAY.  Click the link in our bio to instantly learn how you can stop wasting time on dating apps and have a fulfilling dating life!'
         tweet = tweepy_api.update_status(status=tweet, media_ids=[media.media_id])
     return tweet
 
@@ -107,10 +114,11 @@ def post_scheduled_tweet( scheduled_datetime_str ):
             return update_tweet_with_video(media_url, tweet)
     return update_tweet(tweet)
 
-def post_tweet(): 
+def post_tweet(is_testmode=False): 
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.TWITTER, 
-        post_scheduled_tweet
+        post_scheduled_tweet,
+        is_test = is_testmode
     )
 
 def schedule_video_tweet( tweet, video_remote_url ):

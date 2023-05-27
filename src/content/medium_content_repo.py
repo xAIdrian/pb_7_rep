@@ -10,10 +10,11 @@ import ai.gpt as gpt
 import json
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 
-def post_to_medium():
+def post_to_medium(is_testmode=False):
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.MEDIUM,
-        post_medium_blog_article
+        post_medium_blog_article,
+        is_test = is_testmode
     )
 
 def get_user_details():
@@ -60,7 +61,7 @@ def post_medium_blog_article( schedule_datetime_str ):
         "publishStatus": "public",
         "license": "all-rights-reserved",
         "notifyFollowers": True,
-        "canonicalUrl": "https://www.ditchdatingapps.com"
+        "canonicalUrl": "t.me/+GAtVkGVft8cwMTYx"
     }
     # if tags:
     #     data["tags"] = tags
@@ -78,7 +79,7 @@ def schedule_medium_article(blog):
         blog = text_utils.groom_body(blog)
         parts = blog.split('\n\n', 1)
         image_src = image_creator.get_unsplash_image_url(
-            'female model', 
+            'technology', 
             PostingPlatform.MEDIUM, 
             'landscape'
         )

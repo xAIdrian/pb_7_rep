@@ -34,8 +34,8 @@ SCOPES = [
 ]
 
 # Note that this works only for shorts ATM
-def complete_scheduling_and_posting_of_video ( db_remote_path ): 
-
+def complete_scheduling_and_posting_of_video ( remote_video_path ): 
+    print('Scheduling YT video...')
     creds = get_youtube_credentials()
     if creds == '': return ''
 
@@ -59,7 +59,7 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
     )
     description = text_utils.format_yt_description(description)
 
-    upload_file_path = dropbox_storage.download_file_to_local_path(db_remote_path)
+    upload_file_path = dropbox_storage.download_file_to_local_path(remote_video_path)
     posting_time = scheduler.get_best_posting_time(PostingPlatform.YOUTUBE)
 
     request = youtube.videos().insert(
@@ -151,19 +151,6 @@ def get_youtube_credentials():
     return credentials
 
 def post_previously_scheduled_youtube_video():
-    '''
-    # Sample Python code for youtube.videos.insert
-    # NOTES:
-    # 1. This sample code uploads a file and can't be executed via this interface.
-    #    To test this code, you must run it locally using your own API credentials.
-    #    See: https://developers.google.com/explorer-help/code-samples#python
-    # 2. This example makes a simple upload request. We recommend that you consider
-    #    using resumable uploads instead, particularly if you are transferring large
-    #    files or there's a high likelihood of a network interruption or other
-    #    transmission failure. To learn more about resumable uploads, see:
-    #    https://developers.google.com/api-client-library/python/guide/media_upload
-
-    '''
     earliest_scheduled_datetime_str = firebase_storage_instance.get_earliest_scheduled_datetime(PostingPlatform.YOUTUBE)
     if (earliest_scheduled_datetime_str == ''): return 'no posts scheduled'
     print(f'YT last posted time: {earliest_scheduled_datetime_str}')
@@ -189,7 +176,6 @@ def schedule_video_story(image_query):
     gpt.generate_video_with_prompt(
         prompt_source=os.path.join("src", "input_prompts", "story.txt"), 
         video_meta_data=image_query,
-        should_polish_post=True,
         post_num=1,
         upload_func=create_story_and_scenes
     )

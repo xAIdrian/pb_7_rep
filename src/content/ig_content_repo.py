@@ -8,18 +8,6 @@ from domain.endpoint_definitions import make_api_call
 import media.image_creator as image_creator
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 import json
-import storage.dropbox_storage as dropbox_storage
-from storage.dropbox_storage import DB_FOLDER_REFORMATTED
-import media.video_converter as video_converter
-
-def optimize_video_for_reels_url(firebase_params):
-    local_video_download = dropbox_storage.download_file_to_local_path(firebase_params['video_url'])
-    optimized_local_path = video_converter.optimize_video_for_reels(local_video_download)
-    optimized_url = dropbox_storage.upload_file_for_sharing_url(
-        optimized_local_path, 
-        DB_FOLDER_REFORMATTED + '/' + os.path.basename(optimized_local_path)
-    )
-    return optimized_url
 
 def create_ig_media_object( params, with_token ):
     """ Create media object
@@ -130,10 +118,11 @@ def make_ig_api_call_with_token( firebase_params ):
 
     elif (firebase_params['media_type'] == 'REELS' or firebase_params['media_type'] == 'VIDEO'):
         
-        optimized_url = optimize_video_for_reels_url(firebase_params)
+        # optimized_url = optimize_video_for_reels_url(firebase_params)
         
         post_params['media_type'] = 'REELS'
-        post_params['video_url'] = optimized_url
+        # post_params['video_url'] = optimized_url
+        post_params['video_url'] = firebase_params['video_url']
         post_params['published'] = firebase_params['published']
         post_params['share_to_feed'] = True
 
@@ -165,31 +154,32 @@ def post_scheduled_ig_post( schedule_datetime_str ):
     
     return make_ig_api_call_with_token(post_params_json)
 
-def publish_ig_media( mediaObjectId, params ) :
-    """ Publish content
+# def publish_ig_media( mediaObjectId, params ) :
+#     """ Publish content
 
-        Args:
-            mediaObjectId: id of the media object
-            params: dictionary of params
+#         Args:
+#             mediaObjectId: id of the media object
+#             params: dictionary of params
         
-        API Endpoint:
-            https://graph.facebook.com/v5.0/{ig-user-id}/media_publish?creation_id={creation-id}&access_token={access-token}
+#         API Endpoint:
+#             https://graph.facebook.com/v5.0/{ig-user-id}/media_publish?creation_id={creation-id}&access_token={access-token}
 
-        Returns:
-            object: data from the endpoint
-    """
-    url = params['endpoint_base'] + params['instagram_account_id'] + '/media_publish' # endpoint url
+#         Returns:
+#             object: data from the endpoint
+#     """
+#     url = params['endpoint_base'] + params['instagram_account_id'] + '/media_publish' # endpoint url
 
-    endpointParams = dict() # parameter to send to the endpoint
-    endpointParams['creation_id'] = mediaObjectId # fields to get back
-    endpointParams['access_token'] = params['access_token'] # access token
+#     endpointParams = dict() # parameter to send to the endpoint
+#     endpointParams['creation_id'] = mediaObjectId # fields to get back
+#     endpointParams['access_token'] = params['access_token'] # access token
 
-    return make_api_call( url=url, req_params=endpointParams, type='POST' ) # make the api call
+#     return make_api_call( url=url, req_params=endpointParams, type='POST' ) # make the api call
 
-def post_ig_media_post():
+def post_ig_media_post(is_testmode=False):
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.INSTAGRAM,
-        post_scheduled_ig_post
+        post_scheduled_ig_post,
+        is_test = is_testmode
     )
 
 def schedule_ig_image_post( caption, image_query ):
