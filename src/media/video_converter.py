@@ -1,9 +1,11 @@
 import sys
 import os
-sys.path.append("../src")
-
 import subprocess
 from storage.firebase_storage import firebase_storage_instance
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def optimize_video_for_reels( input_file ):
 

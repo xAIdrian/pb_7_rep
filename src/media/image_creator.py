@@ -1,10 +1,13 @@
 import sys
-sys.path.append("../src")
-
 import appsecrets as appsecrets
 import requests
 import json
+import os
 from storage.firebase_storage import PostingPlatform
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 # "raw": "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d",
 # "full": "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d?q=75&fm=jpg",

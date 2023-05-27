@@ -1,11 +1,13 @@
 import sys
-sys.path.append("../src")
-
+import os
 from datetime import datetime, timedelta
 import storage.firebase_storage as firebase_storage
 import utility.time_utils as time_utils
 
-# posts 64 times daily
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
+
 
 linkedin_times_array = [
     '2023-03-01T12:00:00', #12pm

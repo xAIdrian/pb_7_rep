@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import pickle
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
@@ -19,6 +17,10 @@ import utility.scheduler as scheduler
 import media.video_converter as video_converter
 import utility.time_utils as time_utils
 import utility.text_utils as text_utils
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 # Build the YouTube API client
 API_SERVICE_NAME = "youtube"

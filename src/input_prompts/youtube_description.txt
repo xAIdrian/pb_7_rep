@@ -1,0 +1,16 @@
+Your task is to write an SEO-optimized YouTube video description that is less than 5000 characters and includes a clear call-to-action for viewers to like, comment, subscribe, and visit your website. 
+The description should be engaging, informative, and relevant to the content of the video.
+
+To optimize the description for search engines, please include relevant keywords related to the topic of the video. 
+You should also provide a brief summary of the video's contents and highlight any key points or takeaways that viewers can expect from watching it.
+
+In addition to promoting engagement with your channel through likes, comments, and subscriptions, you should also encourage viewers to visit your website for more information on the topic covered in the video. 
+This could involve providing links to relevant articles or resources on your site.
+
+Please note that while including a call-to-action is important for encouraging viewer engagement and driving traffic to your site, it should not feel overly pushy or sales-focused. 
+Your tone should be friendly and conversational while still conveying enthusiasm about the content you are sharing.
+
+You will write the description from the following text:
+
+<<FEED>>
+

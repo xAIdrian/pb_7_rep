@@ -128,17 +128,9 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-src/google_desktop_client.json
-src/google_web_client.json
 src/google_youtube_client.json
 src/linkedin_creds.json
 src/yt_access_token.pickle
 
-src/output_downloads/
-src/input_prompts/
-src/outputs/
-
 .idea/
 .vscode/
-
-src/ai-content-machine-d8dcc1434069.json

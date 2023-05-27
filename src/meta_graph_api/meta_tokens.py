@@ -1,12 +1,14 @@
 import sys
 import os
-sys.path.append("../src")
-
 from domain.endpoint_definitions import make_api_call
 import requests
 import appsecrets
 import json
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def create_fb_credentials_object():
 	""" 

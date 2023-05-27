@@ -2,8 +2,6 @@ from __future__ import unicode_literals
 
 import sys
 import os
-sys.path.append("../src")
-
 import ai.gpt as gpt
 import storage.dropbox_storage as dropbox_storage
 from storage.dropbox_storage import DB_FOLDER_READY, DB_FOLDER_SCHEDULED
@@ -17,8 +15,14 @@ import media.video_converter as video_converter
 import storage.dropbox_storage as dropbox_storage
 from storage.dropbox_storage import DB_FOLDER_REFORMATTED
 
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
+
+test_posting=False
+
 def reels_optimize_video_remote_url(remote_video_path):
-    print('Optimizing video for reels...')
+    print('...Optimizing video for reels...')
     local_video_download = dropbox_storage.download_file_to_local_path(remote_video_path)
     optimized_local_path = video_converter.optimize_video_for_reels(local_video_download)
     optimized_url = dropbox_storage.upload_file_for_sharing_url(
@@ -26,8 +30,6 @@ def reels_optimize_video_remote_url(remote_video_path):
         DB_FOLDER_REFORMATTED + '/' + os.path.basename(optimized_local_path)
     )
     return optimized_url
-
-test_posting=False
 
 # Begin the running of our application
 if __name__ == '__main__':
@@ -64,29 +66,28 @@ if __name__ == '__main__':
 
         # We are setting the new remote file path ahead of the move because we want to post
         # from "Scheduled" folder and move the video out of "Ready" ASAP
-        # db_remote_scheduled_path=DB_FOLDER_SCHEDULED + '/' + os.path.basename(db_remote_path)
-        db_remote_scheduled_path=db_remote_path
+        db_remote_scheduled_path=DB_FOLDER_SCHEDULED + '/' + os.path.basename(db_remote_path)
 
         # Instagram Reels
-        # gpt.generate_video_with_prompt(
-        #     prompt_source=os.path.join('src', 'input_prompts', 'instagram.txt'),
-        #     db_remote_path=db_remote_scheduled_path,
-        #     upload_func=ig_content_repo.schedule_ig_video_post
-        # )
+        gpt.generate_video_with_prompt(
+            prompt_source=os.path.join('src', 'input_prompts', 'instagram.txt'),
+            db_remote_path=db_remote_scheduled_path,
+            upload_func=ig_content_repo.schedule_ig_video_post
+        )
 
-        # # Facebook Page & Personal
-        # gpt.generate_video_with_prompt(
-        #     prompt_source=os.path.join('src', 'input_prompts', 'facebook.txt'),
-        #     db_remote_path=db_remote_scheduled_path,
-        #     upload_func=fb_content_repo.schedule_fb_video_post
-        # )
+        # Facebook Page & Personal
+        gpt.generate_video_with_prompt(
+            prompt_source=os.path.join('src', 'input_prompts', 'facebook.txt'),
+            db_remote_path=db_remote_scheduled_path,
+            upload_func=fb_content_repo.schedule_fb_video_post
+        )
 
-        # # Twitter 
-        # gpt.generate_video_with_prompt(
-        #     prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
-        #     db_remote_path=db_remote_scheduled_path,
-        #     upload_func=twitter_content_repo.schedule_video_tweet
-        # )
+        # Twitter 
+        gpt.generate_video_with_prompt(
+            prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
+            db_remote_path=db_remote_scheduled_path,
+            upload_func=twitter_content_repo.schedule_video_tweet
+        )
         gpt.generate_text_prompt(
             prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
             post_num=5,
@@ -108,6 +109,6 @@ if __name__ == '__main__':
         )
 
         # Move file and additional cleanup
-        dropbox_storage.move_file(db_remote_path, db_remote_scheduled_path)
-        print('Finished and completed')
+        dropbox_storage.move_file(raw_db_remote_path, db_remote_scheduled_path)
+        print('🏆 Finished and completed 🏆')
     

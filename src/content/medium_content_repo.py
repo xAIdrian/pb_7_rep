@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import requests
 import appsecrets
 import utility.text_utils as text_utils
@@ -9,6 +7,10 @@ import media.image_creator as image_creator
 import ai.gpt as gpt
 import json
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def post_to_medium(is_testmode=False):
     return firebase_storage_instance.upload_if_ready(

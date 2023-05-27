@@ -1,12 +1,15 @@
 import sys
-sys.path.append("../src")
-
+import os
 import pyrebase
 import appsecrets as appsecrets
 from enum import Enum
 import json
 import utility.scheduler as scheduler
 import utility.time_utils as time_utils
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 class PostingPlatform(Enum):
     FACEBOOK = 'facebook'

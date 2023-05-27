@@ -1,13 +1,15 @@
 import sys
 import os
-sys.path.append("../src")
-
 import time
 import meta_graph_api.meta_tokens as meta_tokens
 from domain.endpoint_definitions import make_api_call
 import media.image_creator as image_creator
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 import json
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def create_ig_media_object( params, with_token ):
     """ Create media object

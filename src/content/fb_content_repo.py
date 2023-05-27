@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import meta_graph_api.meta_tokens as meta_tokens
 from domain.endpoint_definitions import make_api_call
 import media.image_creator as image_creator
@@ -12,6 +10,10 @@ import storage.dropbox_storage as dropbox_storage
 import ai.gpt as gpt
 import json
 import requests
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def chunk_video_upload( post_json_object ):
     local_video_path = dropbox_storage.download_file_to_local_path(post_json_object['url'])

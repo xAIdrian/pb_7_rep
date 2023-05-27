@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import dropbox
 import utility.file_utils as file_utils
 from dropbox.exceptions import AuthError
@@ -80,6 +78,7 @@ def download_file_to_local_path( remote_file_path ):
     )
         
 def download_from_dropbox( remote_file_path, local_download_path ):
+    print("🚀 ~ file: dropbox_storage.py:83 ~ remote_file_path, local_download_path:", remote_file_path, local_download_path)
     with open(local_download_path, "wb") as f:
         metadata, res = dbx.files_download(path=remote_file_path)
         f.write(res.content)

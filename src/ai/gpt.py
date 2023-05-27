@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import whisper
 import warnings
 warnings.filterwarnings("ignore")
@@ -9,6 +7,10 @@ import openai
 import textwrap
 import utility.utils as utils
 import appsecrets as appsecrets
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 openai.api_key = appsecrets.OPEN_AI_API_KEY  
 

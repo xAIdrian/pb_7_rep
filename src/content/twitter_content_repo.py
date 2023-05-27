@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import tweepy
 import appsecrets
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
@@ -12,12 +10,12 @@ import requests
 import media.image_creator as image_creator
 import storage.dropbox_storage as dropbox_storage
 
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
+
 def initialize_tweepy():
     # Authenticate to Twitter
-    print("🚀 ~ file: twitter_content_repo.py:18 ~ appsecrets.TWITTER_API_KEY:", appsecrets.TWITTER_API_KEY)
-    print("🚀 ~ file: twitter_content_repo.py:18 ~ appsecrets.TWITTER_API_SECRET:", appsecrets.TWITTER_API_SECRET)
-    print("🚀 ~ file: twitter_content_repo.py:21 ~ appsecrets.TWITTER_API_AUTH_SECRET:", appsecrets.TWITTER_API_AUTH_SECRET)
-    print("🚀 ~ file: twitter_content_repo.py:21 ~ appsecrets.TWITTER_API_AUTH_TOKEN:", appsecrets.TWITTER_API_AUTH_TOKEN)
     auth = tweepy.OAuthHandler(appsecrets.TWITTER_API_KEY, appsecrets.TWITTER_API_SECRET)
     auth.set_access_token(appsecrets.TWITTER_API_AUTH_TOKEN, appsecrets.TWITTER_API_AUTH_SECRET)
 
@@ -40,10 +38,9 @@ def update_tweet( text ):
         return None
 
 def update_tweet_with_video ( db_remote_path, tweet ):
-    print("🚀 ~ file: twitter_content_repo.py:43 ~ db_remote_path:", db_remote_path)
     local_path = dropbox_storage.download_file_to_local_path(db_remote_path)
     with open(local_path, 'rb') as f:
-        print('Uploading twitter video...')
+        print('...Uploading twitter video...')
         media = tweepy_api.media_upload(
             filename=os.path.basename(local_path), 
             file=f,
@@ -51,7 +48,7 @@ def update_tweet_with_video ( db_remote_path, tweet ):
             wait_for_async_finalize=True,
             media_category='tweet_video'
         )
-        print('Video uploaded!' + str(media))
+        print('...Video uploaded!' + str(media) + '...')
         if (len(tweet) > 275): tweet = 'Exclusive mentorship deal is only available TODAY.  Click the link in our bio to instantly learn how you can stop wasting time on dating apps and have a fulfilling dating life!'
         tweet = tweepy_api.update_status(status=tweet, media_ids=[media.media_id])
     return tweet

@@ -1,12 +1,14 @@
 import sys
 import os
-sys.path.append("../src")
-
 import json
 import requests
 import domain.linkedin_auth as li_auth
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 from domain.endpoint_definitions import make_api_call
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def get_author_from_user(headers):
     '''

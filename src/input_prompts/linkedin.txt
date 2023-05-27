@@ -1,0 +1,14 @@
+Your task is to write a social media post for LinkedIn that combines an educational and humorous tone, while maintaining a casual style. 
+The post should be no more than 2000 characters long, including any necessary links or images. 
+Please include hashtags at the end of the post.
+
+Your post should focus on a topic related to your industry or profession, providing valuable information or insights in an engaging and entertaining way. 
+You can use humor, anecdotes, or personal experiences to make your point and connect with readers.
+
+Please note that your post should be appropriate for a professional audience and avoid controversial or offensive topics. 
+Your goal is to create a positive impression and build connections within your industry through informative yet enjoyable content.
+
+Please note that your post must be generated from the following text:
+
+<<FEED>>
+
