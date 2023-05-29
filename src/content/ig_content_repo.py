@@ -50,7 +50,7 @@ def schedule_ig_video_post( caption, db_remote_path ):
 
     remote_media_obj = create_ig_media_object( params, False )
     upload_result = firebase_storage_instance.upload_scheduled_post(PostingPlatform.INSTAGRAM, remote_media_obj)
-    print(f'IG scheduled!\n{upload_result}')
+    print(f'⏰ IG scheduled! {upload_result}')
 
 def get_ig_container_status( ig_container_id, params ):
     """ Check the status of a media object
@@ -100,9 +100,9 @@ def publish_image( media_url, post_params, firebase_object):
     publish_response = make_api_call(url=publish_url, req_params=publish_params, type='POST')
         
     if publish_response['json_data']['id'] != '':
-        print('IG Post published successfully!')
+        print('✅ IG Post published successfully!')
     else:
-        print('Error publishing post.')
+        print('🔥 Error publishing post.')
     return publish_response
 
 # this one worked but went through the FFMPEG process https://dl.dropboxusercontent.com/s/tlyj3rjtc3muu1j/what%20is%20status.mp4
@@ -136,9 +136,9 @@ def make_ig_api_call_with_token( firebase_params ):
         )
 
         if publish_response['json_data']['id'] != '':
-            print('IG Post published successfully!')
+            print('✅ IG Post published successfully!')
         else:
-            print('Error publishing post.')
+            print('🔥 Error publishing post.')
         
         return publish_response
 
@@ -149,9 +149,9 @@ def post_scheduled_ig_post( schedule_datetime_str ):
     )
     try:
         post_params_json = json.loads(post_params_json)
-        print(f'IG firebase fetched {post_params_json}')
+        print(f'📦 IG firebase fetched {post_params_json}')
     except:
-        print(f'IG error {post_params_json}')
+        print(f'🔥 IG error {post_params_json}')
         return ''    
     
     return make_ig_api_call_with_token(post_params_json)
@@ -203,16 +203,17 @@ def monitor_ig_upload_status( ig_upload_response, post_params, publish_func ):
     upload_container_id = ig_upload_response['json_data']['id'] # id of the media object that was created
     container_status_code = 'IN_PROGRESS'
 
-    print(f"\nIG upload container {upload_container_id} beginning upload") # id of the object
+    print(f"🌐 IG upload container {upload_container_id} beginning upload") # id of the object
 
     while container_status_code != 'FINISHED': # keep checking until the object status is finished
         container_status_response = get_ig_container_status( upload_container_id, post_params ) # check the status on the object
         container_status_code = container_status_response['json_data']['status_code'] # update status code
         if (container_status_code == 'ERROR'): 
+            print('🔥 IG upload error')
             print(container_status_response['json_data']['status'])
             break
 
-        print(f"Status Code: {container_status_code.lower()}") # status code of the object
+        print(f"🌐Status Code: {container_status_code.lower()}") # status code of the object
         time.sleep( 5 ) # wait 5 seconds if the media object is still being processed
 
     publish_container_response = publish_func( upload_container_id, post_params ) # publish the post to instagram

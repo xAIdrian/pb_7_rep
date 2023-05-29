@@ -1,8 +1,0 @@
-Craft a tweet that combines education and humor with a casual tone. 
-Your tweet should be no more than 256 characters long and include one relevant hashtag.
-
-Please note that your tweet should be appropriate for a general audience and avoid controversial or sensitive topics.
-You must craft your tweet from the following text:
-
-<<FEED>>
-

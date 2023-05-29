@@ -1,9 +1,0 @@
-Your task is to write a captivating and informative summary of the provided text that can be used as material for social media posts. 
-The summary should highlight the key points and main ideas of the text, while also being engaging and attention-grabbing.
-
-Please ensure that your summary accurately reflects the content of the original text and provides enough detail to entice readers to learn more. 
-Your summary should be concise, using clear language and avoiding unnecessary jargon or technical terms.
-
-Please note that your summary must be generated from the following text:
-
-<<SUMMARY>>

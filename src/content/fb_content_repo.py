@@ -19,7 +19,7 @@ def chunk_video_upload( post_json_object ):
     local_video_path = dropbox_storage.download_file_to_local_path(post_json_object['url'])
     file_size = os.path.getsize(local_video_path)
     page_id=post_json_object['page_id']
-    print(f'processing file size: {file_size}')
+    print(f'⚙️ Processing file size: {file_size}')
 
     # Step 1: Upload the video
     video_response = requests.post(
@@ -103,9 +103,9 @@ def post_scheduled_fb_post( scheduled_datetime_str ):
     )
     try:
         post_json_object = json.loads(firebase_json)
-        print(f'FB {post_json_object}')
+        print(f'📦 FB {post_json_object}')
     except:
-        print(F'FB error {firebase_json}')
+        print(f'🔥FB error {firebase_json}')
         return ''
         
     page_result = post_to_page(post_json_object)
@@ -136,7 +136,7 @@ def schedule_fb_post( caption, image_query ):
         PostingPlatform.FACEBOOK, 
         payload
     )
-    print('FB upload scheduled post result' + str(result))
+    print('📦 FB upload scheduled post result' + str(result))
     return result
     
 # def post_blog_promo( blog_title, ref_url ):
@@ -170,4 +170,4 @@ def schedule_fb_video_post( caption, db_remote_path ):
         PostingPlatform.FACEBOOK, 
         payload
     )
-    print(f'FB scheduled!{result}')
+    print(f'⏰ FB scheduled!{result}')

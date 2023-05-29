@@ -44,7 +44,7 @@ def post_medium_blog_article( schedule_datetime_str ):
         post_params = json.loads(post_params_json)
         title = text_utils.groom_title(post_params['title'])
     except:
-        print(f'MD error {post_params_json}')
+        print(f'🔥 MD error {post_params_json}')
         return '' 
      
     author_id=get_user_details()['id']
@@ -71,10 +71,10 @@ def post_medium_blog_article( schedule_datetime_str ):
 
     if response.status_code == 201:
         result = response.json()["data"]
-        print(result)
+        print(f'📦 MD result{result}')
         return result
     else:
-        raise Exception(f"MD Error creating post: {response.status_code} - {response.text}") 
+        print(f"🔥 MD Error creating post: {response.status_code} - {response.text}") 
 
 def schedule_medium_article(blog):
     try:
@@ -102,9 +102,9 @@ def schedule_medium_article(blog):
             PostingPlatform.MEDIUM, 
             payload
         )
-        print(result)
+        print(f'📦 MD result {result}')
     except Exception as e:
-        print(f'Something went wrong parsing blog {e}')        
+        print(f'🔥 MD: Something went wrong parsing blog {e}')        
 
 #construct and save address of uploaded blog
                 # if (result):

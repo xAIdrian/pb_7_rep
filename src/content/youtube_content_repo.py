@@ -37,7 +37,7 @@ SCOPES = [
 
 # Note that this works only for shorts ATM
 def complete_scheduling_and_posting_of_video ( remote_video_path ): 
-    print('Scheduling YT video...')
+    print('Begining YT scheduling...')
     creds = get_youtube_credentials()
     if creds == '': return ''
 
@@ -84,7 +84,7 @@ def complete_scheduling_and_posting_of_video ( remote_video_path ):
     )
     try:
         response = request.execute()
-        print(f'YT posting scheduled!\n{response}')   
+        print(f'⏰ YT posting scheduled!\n{response}')   
         firebase_storage_instance.upload_scheduled_post(
             PostingPlatform.YOUTUBE,
             payload = {
@@ -149,16 +149,16 @@ def get_youtube_credentials():
         
         with open(token_file, 'wb') as token:
             pickle.dump(credentials, token)                    
-    # print(f'Youtube authentication complete with creds: {credentials}')
+    print(f'✅ YT authentication complete and approved!')
     return credentials
 
 def post_previously_scheduled_youtube_video():
     earliest_scheduled_datetime_str = firebase_storage_instance.get_earliest_scheduled_datetime(PostingPlatform.YOUTUBE)
     if (earliest_scheduled_datetime_str == ''): return 'no posts scheduled'
-    print(f'YT last posted time: {earliest_scheduled_datetime_str}')
     
     ready_to_post = time_utils.is_current_posting_time_within_window(earliest_scheduled_datetime_str)
     if (ready_to_post):  
+        print(f'✅ YT earliest_scheduled_datetime_str: {earliest_scheduled_datetime_str} coincides with already scheduled time')
         response = firebase_storage_instance.delete_post(
             PostingPlatform.YOUTUBE, 
             earliest_scheduled_datetime_str
@@ -167,7 +167,7 @@ def post_previously_scheduled_youtube_video():
 
 def post_youtube_video():    
     response = post_previously_scheduled_youtube_video()
-    print(f'Youtube response {response}') 
+    print(f'📦 YT response {response}') 
 
 def process_initial_video_download_transcript(db_remote_path, should_summarize=True):
     filename = video_converter.local_video_to_mp3(db_remote_path)
@@ -184,9 +184,9 @@ def schedule_video_story(image_query):
     video_remote_url = video_editor.edit_movie_for_remote_url(image_query)
     if (video_remote_url != ''):
         result = complete_scheduling_and_posting_of_video(video_remote_url)
-        print(f'youtube schedule result\n\n{result}')
+        print(f'⏰ YT scheduled! \n{result}')
     else:
-        print('something went wrong with our video remote url')    
+        print('🔥 YT error getting remote video url')    
 
 def get_recent_videos():
     # Set up the YouTube API client
@@ -204,5 +204,4 @@ def get_recent_videos():
 
     # Print the title and video ID of each video in the response
     for item in response["items"]:
-        print(f'Title: {item["snippet"]["title"]}')
-        print(f'Video ID: {item["id"]["videoId"]}')
+        print(f'📦 Title: {item["snippet"]["title"]} && Video ID: {item["id"]["videoId"]}')

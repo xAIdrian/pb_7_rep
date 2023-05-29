@@ -40,7 +40,7 @@ def initialize_dropbox():
             app_secret=appsecrets.DROPBOX_APP_SECRET,
             oauth2_refresh_token=token
         )
-        print('Dropbox Initialized Successfully')
+        print('DBox init OK')
         return dbx        
 
 dbx = initialize_dropbox() 

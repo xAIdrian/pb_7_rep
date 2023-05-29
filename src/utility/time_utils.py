@@ -17,7 +17,7 @@ def is_current_posting_time_within_window( earliest_scheduled_datetime_str ):
             boolean: are we running this close enough to the scheduled date
     '''
     if (earliest_scheduled_datetime_str is None):
-        print(f'earliest_scheduled_datetime_str is None')
+        print(f'🔥 NO earliest_scheduled_datetime_str')
         return False
     
     formatted_iso=time_utils.convert_str_to_iso_format(earliest_scheduled_datetime_str.strip())
@@ -27,12 +27,11 @@ def is_current_posting_time_within_window( earliest_scheduled_datetime_str ):
     lower_bound=scheduled_time - timedelta(minutes=10)
     upper_bound=scheduled_time + timedelta(minutes=10)
 
-    print(f'Checking if {current_time} is between {lower_bound} and {upper_bound}')
     if lower_bound < current_time < upper_bound:
-        print('Yes, it is. Posting now.')
+        print(f'✅ CURRENT TIME : {current_time} is between posting window {lower_bound} and {upper_bound}')
         return True
     else:
-        print('No, it is not. Not posting now.')
+        print(f'❌ CURRENT TIME : {current_time} is NOT between posting window {lower_bound} and {upper_bound}')
         return False
 
 def convert_str_to_iso_format(date_str):
@@ -68,8 +67,9 @@ def is_expired( posting_datetime_str ):
         return False
     trimmed_datetime_now = datetime.now().replace(microsecond=0, second=0)
     is_posting_time_before_now = datetime.fromisoformat(posting_datetime_str) < trimmed_datetime_now
-    print(f'Is {datetime.fromisoformat(posting_datetime_str)} < {trimmed_datetime_now}? {is_posting_time_before_now}')
+    
     if (is_posting_time_before_now):
+        print(f'❌ POSTING TIME {datetime.fromisoformat(posting_datetime_str)} IS BEFORE {trimmed_datetime_now}')
         return True
     else:
         return False

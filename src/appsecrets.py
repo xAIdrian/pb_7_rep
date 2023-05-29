@@ -3,7 +3,6 @@ from google.cloud import secretmanager
 project_id = "ai-content-machine"
 
 def access_secret(secret_id, version="1"):
-    print(f"Accessing secret {secret_id}")
     client = secretmanager.SecretManagerServiceClient()
     name = f"projects/{project_id}/secrets/{secret_id}/versions/{version}"
     response = client.access_secret_version(request={"name": name})
