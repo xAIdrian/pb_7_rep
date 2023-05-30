@@ -1,8 +1,11 @@
 import sys
-sys.path.append("../src")
-
+import os
 from domain.endpoint_definitions import getCreds, make_api_call
 import datetime
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def debug_access_token( params ) :
 	""" Get info on an access token 

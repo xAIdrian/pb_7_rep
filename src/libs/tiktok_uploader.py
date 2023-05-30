@@ -1,8 +1,11 @@
 # import sys
 # import os
-# sys.path.append("../src")
 # import requests, json, time
 # from libs.util import assertSuccess,printError,getTagsExtra,uploadToTikTok,log
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+# current_dir = os.path.dirname(os.path.abspath(__file__))
+# sys.path.append(os.path.join(current_dir, "../src"))
 
 # UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/68.0.3440.106 Safari/537.36'
 

@@ -1,12 +1,14 @@
 import sys
 import os
-sys.path.append("../src")
-
 import json
 import requests
 import domain.linkedin_auth as li_auth
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 from domain.endpoint_definitions import make_api_call
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def get_author_from_user(headers):
     '''
@@ -14,7 +16,7 @@ def get_author_from_user(headers):
     '''
     response = requests.get('https://api.linkedin.com/v2/me', headers = headers)
     user_info = response.json()
-    print(f'LI userinfo {user_info}')
+    print(f'📦 LI userinfo {user_info}')
     urn = user_info['id']
     return f'urn:li:person:{urn}'
 
@@ -68,7 +70,7 @@ def post_linkedin_link_message():
         req_json=post_data, 
         type='POST'
     )
-    print(f'LINKEDIN {result}')
+    print(f'📦 LINKEDIN {result}')
     return result
 
 def post_linkedin_user_message( scheduled_datetime_str ):
@@ -79,9 +81,9 @@ def post_linkedin_user_message( scheduled_datetime_str ):
     )
     try:
         post_params = json.loads(post_params_json)
-        print(f'LI post params return {post_params}')
+        print(f'📦 LI post params return {post_params}')
     except:
-        print(f'LI {post_params_json}')
+        print(f'🔥 LI {post_params_json}')
         return '' 
 
     credentials = os.path.join('src', 'linkedin_creds.json')
@@ -112,21 +114,25 @@ def post_linkedin_user_message( scheduled_datetime_str ):
         req_json=post_data, 
         type='POST'
     )
-    print(f'LI result {result}')
+    print(f'📦 LI result {result}')
     return result
 
-def post_to_linkedin(): 
+def post_to_linkedin(is_testmode=False): 
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.LINKEDIN, 
-        post_linkedin_user_message
+        post_linkedin_user_message,
+        is_test = is_testmode
     ) 
 
 def schedule_linkedin_post( text ):
-
+    if (text is None or text == ''):
+        print('🔥 Error scheduling LI')
+        return ''
+    
     payload = dict()
     payload['text'] = text
     result = firebase_storage_instance.upload_scheduled_post(
         PostingPlatform.LINKEDIN, 
         payload
     )
-    print(f'LinkedIn scheduled!\n{result}') 
+    print(f'⏰ LinkedIn scheduled! {result}') 

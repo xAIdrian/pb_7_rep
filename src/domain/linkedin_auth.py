@@ -1,12 +1,15 @@
 import sys
-sys.path.append("../src")
-
 import json
+import os
 import appsecrets
 import requests
 import string
 import random
 import utility.utils as utils
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 api_url = 'https://www.linkedin.com/oauth/v2'
 

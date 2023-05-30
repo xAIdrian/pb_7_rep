@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import whisper
 import warnings
 warnings.filterwarnings("ignore")
@@ -9,6 +7,10 @@ import openai
 import textwrap
 import utility.utils as utils
 import appsecrets as appsecrets
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 openai.api_key = appsecrets.OPEN_AI_API_KEY  
 
@@ -20,18 +22,23 @@ openai.api_key = appsecrets.OPEN_AI_API_KEY
     Returns:
         String of AI generated content
 '''
-def gpt_3 (prompt):
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        temperature=1.2,
-        max_tokens=1500,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
-    text = response['choices'][0]['text'].strip()
-    return text
+def gpt_3(prompt):
+    try:
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            temperature=1.2,
+            max_tokens=2000,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
+        )
+        text = response['choices'][0]['text'].strip()
+        return text
+    except Exception as err:
+        print(err)
+        return ''
+    
 
 def mp3_to_transcript(mp3_file_path):
     print('Processing mp3 to transcript')
@@ -40,7 +47,7 @@ def mp3_to_transcript(mp3_file_path):
     result = model.transcribe(sound, fp16=False, language = 'en')
 
     yttrans = (result['text'])
-    result_path = mp3_file_path + '_transcript.txt'
+    result_path = mp3_file_path.replace('.mp3', '_transcript.txt')
     utils.save_file(result_path, yttrans)
     print(f'saved mp3 transcript: {yttrans}')
     return result_path
@@ -48,13 +55,16 @@ def mp3_to_transcript(mp3_file_path):
 def transcript_to_summary(transcript_file_path):
     print('Processing transcript to summary')
     alltext = utils.open_file(transcript_file_path)
+    print("🚀 ~ file: gpt.py:51 ~ alltext:", alltext)
     chunks = textwrap.wrap(alltext, 2500)
     result = list()
     count = 0
     for chunk in chunks:
+        print("🚀 ~ file: gpt.py:56 ~ chunk:", chunk)
         count = count + 1
         file_path_input = os.path.join("src", "input_prompts", "summary.txt")
         prompt = utils.open_file(file_path_input).replace('<<SUMMARY>>', chunk)
+        print("🚀 ~ file: gpt.py:58 ~ prompt:", prompt)
         prompt = prompt.encode(encoding='ASCII',errors='ignore').decode()
         summary = gpt_3(prompt)
         print('\n\n\n', count, 'out of', len(chunks), 'Compressions', ' : ', summary)
@@ -78,17 +88,16 @@ def get_gpt_generated_text( prompt_source ):
     applied_prompt = utils.open_file(prompt_source).replace('<<FEED>>', feed_source)
     return gpt_3(applied_prompt)
 
-def get_polished_generated_text ( text ):
-    # get the first draft of the generated text
-    feedin_source_file = os.path.join("src", "input_prompts", "polish.txt")
-    applied_prompt = utils.open_file(feedin_source_file).replace('<<FEED>>', text)
-    return gpt_3(applied_prompt)
+# def get_polished_generated_text ( text ):
+#     # get the first draft of the generated text
+#     feedin_source_file = os.path.join("src", "input_prompts", "polish.txt")
+#     applied_prompt = utils.open_file(feedin_source_file).replace('<<FEED>>', text)
+#     return gpt_3(applied_prompt)
 
 def generate_video_with_prompt( 
         prompt_source, 
         db_remote_path, 
-        upload_func,
-        should_polish = False 
+        upload_func
     ):
     """
     Convert a single file of language to another using chat GPT as a video
@@ -108,39 +117,35 @@ def generate_video_with_prompt(
     print(f'Video prompt {prompt_source}')
     gpt_text = get_gpt_generated_text(prompt_source)
 
-    if (should_polish):
-        gpt_text = get_polished_generated_text(gpt_text)
-
     upload_func(gpt_text, db_remote_path)
 
 def generate_text_prompt( 
         prompt_source, 
         post_num, 
-        upload_func,
-        should_polish = False 
+        upload_func
     ):
     
     for num in range(post_num):
         print(f'Processing #{num+1} of {prompt_source}')
         gpt_text = get_gpt_generated_text(prompt_source)
 
-        if (should_polish):
-            gpt_text = get_polished_generated_text(gpt_text)
-
         upload_func(gpt_text)
 
 def prompt_to_string_from_file( prompt_source_file, feedin_source_file ):
+    print("🚀 ~ file: gpt.py:129 ~ prompt_to_string_from_file:", 'prompt_to_string_from_file')
     feed_source = utils.open_file(feedin_source_file)
     appliedprompt = utils.open_file(prompt_source_file).replace('<<FEED>>', feed_source)
     finaltext = gpt_3(appliedprompt)
     return finaltext
 
 def prompt_to_string( prompt_source_file, feedin_source ):
+    print("🚀 ~ file: gpt.py:136 ~ prompt_to_string:", prompt_to_string)
     appliedprompt = utils.open_file(prompt_source_file).replace('<<FEED>>', feedin_source)
     finaltext = gpt_3(appliedprompt)
     return finaltext
 
 def link_prompt_to_string( prompt_source_file, feedin_title, feedin_link ):
+    print("🚀 ~ file: gpt.py:142 ~ link_prompt_to_string:", link_prompt_to_string)
     appliedprompt = utils.open_file(prompt_source_file).replace('<<TITLE>>', feedin_title).replace('<<LINK>>', feedin_link)
     finaltext = gpt_3(appliedprompt)
     return finaltext

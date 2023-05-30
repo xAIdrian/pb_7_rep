@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import requests
 import json
 import appsecrets as appsecrets
@@ -10,7 +8,10 @@ import media.image_creator as image_creator
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 import ai.speech_synthesis as speech_synthesis
 import time
-# import constants
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 movies_url = 'https://api.json2video.com/v2/movies'
 

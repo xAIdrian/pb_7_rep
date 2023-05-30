@@ -1,12 +1,14 @@
 import sys
 import os
-sys.path.append("../src")
-
 import requests
 import json
 import appsecrets
 from storage.firebase_storage import PostingPlatform
 import domain.endpoint_definitions as endpoint_definition
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 rebrandly_url = "https://api.rebrandly.com/v1/links"
 

@@ -1,9 +1,11 @@
 import sys
 import os
-sys.path.append("../src")
-
 import subprocess
 from storage.firebase_storage import firebase_storage_instance
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def optimize_video_for_reels( input_file ):
 
@@ -52,22 +54,23 @@ def convert_local_video_to_mp3(input_file):
     print('Conversion to mp3 successful')
     return output_file
     
-def get_downloaded_video_local_path( remote_video_url ):
-    try:
-        upload_file_path = download_video(remote_video_url)
-        # firebase_storage_instance.upload_file_to_storage(
-        #     "ai_content_video/" + upload_file_path,
-        #     upload_file_path
-        # )
-        return upload_file_path
-    except Exception as e:
-        print(f'Error downloading video: {e}')
-        return    
+# def get_downloaded_video_local_path( remote_video_url ):
+#     try:
+#         upload_file_path = download_video(remote_video_url)
+#         # firebase_storage_instance.upload_file_to_storage(
+#         #     "ai_content_video/" + upload_file_path,
+#         #     upload_file_path
+#         # )
+#         return upload_file_path
+#     except Exception as e:
+#         print(f'Error downloading video: {e}')
+#         return    
     
 def local_video_to_mp3( local_mp4_path ):
-    mp3_path = local_mp4_path.replace('.mp4', '.mp3')
+    mp3_path = local_mp4_path
+    improved_mp3_path = mp3_path.replace('.mp4', '.mp3')
     # Set the FFmpeg command and arguments
-    command = ["ffmpeg", "-i", local_mp4_path, "-vn", "-acodec", "libmp3lame", "-f", "mp3", mp3_path]
+    command = ["ffmpeg", "-y", "-i", local_mp4_path, "-vn", "-acodec", "libmp3lame", "-f", "mp3", improved_mp3_path]
     subprocess.call(command) # Run the command using subprocess
     print("Conversion complete!")
-    return mp3_path
+    return improved_mp3_path

@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import requests
 import appsecrets
 import utility.text_utils as text_utils
@@ -10,10 +8,15 @@ import ai.gpt as gpt
 import json
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 
-def post_to_medium():
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
+
+def post_to_medium(is_testmode=False):
     return firebase_storage_instance.upload_if_ready(
         PostingPlatform.MEDIUM,
-        post_medium_blog_article
+        post_medium_blog_article,
+        is_test = is_testmode
     )
 
 def get_user_details():
@@ -41,7 +44,7 @@ def post_medium_blog_article( schedule_datetime_str ):
         post_params = json.loads(post_params_json)
         title = text_utils.groom_title(post_params['title'])
     except:
-        print(f'MD error {post_params_json}')
+        print(f'🔥 MD error {post_params_json}')
         return '' 
      
     author_id=get_user_details()['id']
@@ -59,8 +62,7 @@ def post_medium_blog_article( schedule_datetime_str ):
         "contentFormat": "html",
         "publishStatus": "public",
         "license": "all-rights-reserved",
-        "notifyFollowers": True,
-        "canonicalUrl": "https://www.ditchdatingapps.com"
+        "notifyFollowers": True
     }
     # if tags:
     #     data["tags"] = tags
@@ -68,17 +70,21 @@ def post_medium_blog_article( schedule_datetime_str ):
 
     if response.status_code == 201:
         result = response.json()["data"]
-        print(result)
+        print(f'📦 MD result{result}')
         return result
     else:
-        raise Exception(f"MD Error creating post: {response.status_code} - {response.text}") 
+        print(f"🔥 MD Error creating post: {response.status_code} - {response.text}") 
 
 def schedule_medium_article(blog):
+    if (blog is None or blog == ''):
+        print('🔥 Error scheduling MD')
+        return ''
+    
     try:
         blog = text_utils.groom_body(blog)
         parts = blog.split('\n\n', 1)
         image_src = image_creator.get_unsplash_image_url(
-            'female model', 
+            'technology', 
             PostingPlatform.MEDIUM, 
             'landscape'
         )
@@ -99,9 +105,9 @@ def schedule_medium_article(blog):
             PostingPlatform.MEDIUM, 
             payload
         )
-        print(result)
+        print(f'📦 MD result {result}')
     except Exception as e:
-        print(f'Something went wrong parsing blog {e}')        
+        print(f'🔥 MD: Something went wrong parsing blog {e}')        
 
 #construct and save address of uploaded blog
                 # if (result):

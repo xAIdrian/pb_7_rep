@@ -1,11 +1,13 @@
 import sys
-sys.path.append("../src")
-
-import replicate
 import appsecrets as appsecrets
 import requests
 import json
+import os
 from storage.firebase_storage import PostingPlatform
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 # "raw": "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d",
 # "full": "https://images.unsplash.com/photo-1417325384643-aac51acc9e5d?q=75&fm=jpg",
@@ -51,50 +53,3 @@ def get_unsplash_image_url( search_query, platform, orientation = 'portrait' ):
     except:
         print(f'error with image {response}')
         return ''
-
-def get_ai_image(visual_prompt, width = 512, height = 1024):
-    api = replicate.Client(appsecrets.REPLICATE_TOKEN)
-    model = api.models.get("tstramer/midjourney-diffusion")
-    version = model.versions.get("436b051ebd8f68d23e83d22de5e198e0995357afef113768c20f0b6fcef23c8b")
-
-#     # https://replicate.com/tstramer/midjourney-diffusion/versions/436b051ebd8f68d23e83d22de5e198e0995357afef113768c20f0b6fcef23c8b#input
-    inputs = {
-#         # Input prompt
-        'prompt': visual_prompt,
-
-#         # Specify things to not see in the output  
-        'negative_prompt': 'people person man lady hand hands she he them woman face faces',
-
-#         # Width of output image. Maximum size is 1024x768 or 768x1024 because # of memory limits
-        'width': width,
-
-#         # Height of output image. Maximum size is 1024x768 or 768x1024 because of memory limits
-        'height': height,
-
-#         # Prompt strength when using init image. 1.0 corresponds to full destruction of information in init image
-        'prompt_strength': 0.8,
-
-#         # Number of images to output. # Range: 1 to 4
-        'num_outputs': 1,
-
-#         # Number of denoising steps # Range: 1 to 500
-        'num_inference_steps': 50,
-
-#         # Scale for classifier-free guidance # Range: 1 to 20
-        'guidance_scale': 7.5,
-
-#         # Choose a scheduler.
-        'scheduler': "DPMSolverMultistep",
-
-#         # Random seed. Leave blank to randomize the seed
-#         # 'seed': ...,
-    }
-
-#     # https://replicate.com/tstramer/midjourney-diffusion/versions/436b051ebd8f68d23e83d22de5e198e0995357afef113768c20f0b6fcef23c8b#output-schema
-    try:
-        output = version.predict(**inputs)
-        print(output[0])
-        return output[0]
-    except Exception as e:
-        print(f'Image processing failed: {e}')
-        return 'https://replicate.delivery/pbxt/YkWafGlPx70qIylnrCQvnNCPfseNNMHru9UWmVrQzc6Lw55gA/out-0.png'    

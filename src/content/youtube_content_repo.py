@@ -1,7 +1,5 @@
 import sys
 import os
-sys.path.append("../src")
-
 import pickle
 import google_auth_oauthlib.flow
 import googleapiclient.discovery
@@ -20,6 +18,10 @@ import media.video_converter as video_converter
 import utility.time_utils as time_utils
 import utility.text_utils as text_utils
 
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
+
 # Build the YouTube API client
 API_SERVICE_NAME = "youtube"
 API_VERSION = "v3"
@@ -34,8 +36,8 @@ SCOPES = [
 ]
 
 # Note that this works only for shorts ATM
-def complete_scheduling_and_posting_of_video ( db_remote_path ): 
-
+def complete_scheduling_and_posting_of_video ( remote_video_path ): 
+    print('Begining YT scheduling...')
     creds = get_youtube_credentials()
     if creds == '': return ''
 
@@ -59,7 +61,7 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
     )
     description = text_utils.format_yt_description(description)
 
-    upload_file_path = dropbox_storage.download_file_to_local_path(db_remote_path)
+    upload_file_path = dropbox_storage.download_file_to_local_path(remote_video_path)
     posting_time = scheduler.get_best_posting_time(PostingPlatform.YOUTUBE)
 
     request = youtube.videos().insert(
@@ -82,7 +84,7 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
     )
     try:
         response = request.execute()
-        print(f'YT posting scheduled!\n{response}')   
+        print(f'⏰ YT posting scheduled!\n{response}')   
         firebase_storage_instance.upload_scheduled_post(
             PostingPlatform.YOUTUBE,
             payload = {
@@ -94,9 +96,14 @@ def complete_scheduling_and_posting_of_video ( db_remote_path ):
     except Exception as e:    
         print(f'Youtube error {e}')
         response = e
+        
     return response
 
 def scheduled_youtube_video ( remote_video_url ):  
+    if (remote_video_url is None or remote_video_url == ''):
+        print('🔥 Error scheduling YT')
+        return ''
+    
     summary_file = os.path.join('src', 'outputs', 'summary_output.txt')
     title = gpt3.prompt_to_string_from_file(
         os.path.join('src', 'input_prompts', 'youtube_title.txt'),
@@ -137,39 +144,35 @@ def get_youtube_credentials():
     flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(file_path, SCOPES)
 
     # get cached values
-    token_file = os.path.join('src', 'yt_access_token.pickle')
-    with open(token_file, "rb") as input_file:
-        credentials = pickle.load(input_file)
+    try:
+        token_file = os.path.join('src', 'yt_access_token.pickle')
+        with open(token_file, "rb") as input_file:
+            credentials = pickle.load(input_file)
 
-    if (credentials == ''):
-        credentials = flow.run_local_server()
+        if (credentials == ''):
+            credentials = flow.run_local_server()
+            
+            with open(token_file, 'wb') as token:
+                pickle.dump(credentials, token)  
+    except:
+        print('🔥 YT error getting cached credentials')
+        # this is bad and needs to be updated
+        # credentials = flow.run_local_server()
         
-        with open(token_file, 'wb') as token:
-            pickle.dump(credentials, token)
-                    
-    print(f'Youtube authentication complete with creds: {credentials}')
+        # with open(token_file, 'wb') as token:
+        #     pickle.dump(credentials, token)
+
+    print(f'✅ YT authentication complete and approved!')
     return credentials
 
 def post_previously_scheduled_youtube_video():
-    '''
-    # Sample Python code for youtube.videos.insert
-    # NOTES:
-    # 1. This sample code uploads a file and can't be executed via this interface.
-    #    To test this code, you must run it locally using your own API credentials.
-    #    See: https://developers.google.com/explorer-help/code-samples#python
-    # 2. This example makes a simple upload request. We recommend that you consider
-    #    using resumable uploads instead, particularly if you are transferring large
-    #    files or there's a high likelihood of a network interruption or other
-    #    transmission failure. To learn more about resumable uploads, see:
-    #    https://developers.google.com/api-client-library/python/guide/media_upload
-
-    '''
     earliest_scheduled_datetime_str = firebase_storage_instance.get_earliest_scheduled_datetime(PostingPlatform.YOUTUBE)
-    if (earliest_scheduled_datetime_str == ''): return 'no posts scheduled'
-    print(f'YT last posted time: {earliest_scheduled_datetime_str}')
+    if (earliest_scheduled_datetime_str == ''): 
+        return 'no posts scheduled'
     
     ready_to_post = time_utils.is_current_posting_time_within_window(earliest_scheduled_datetime_str)
     if (ready_to_post):  
+        print(f'✅ YT earliest_scheduled_datetime_str: {earliest_scheduled_datetime_str} coincides with already scheduled time')
         response = firebase_storage_instance.delete_post(
             PostingPlatform.YOUTUBE, 
             earliest_scheduled_datetime_str
@@ -178,7 +181,7 @@ def post_previously_scheduled_youtube_video():
 
 def post_youtube_video():    
     response = post_previously_scheduled_youtube_video()
-    print(f'Youtube response {response}') 
+    print(f'📦 YT response {response}') 
 
 def process_initial_video_download_transcript(db_remote_path, should_summarize=True):
     filename = video_converter.local_video_to_mp3(db_remote_path)
@@ -189,16 +192,15 @@ def schedule_video_story(image_query):
     gpt.generate_video_with_prompt(
         prompt_source=os.path.join("src", "input_prompts", "story.txt"), 
         video_meta_data=image_query,
-        should_polish_post=True,
         post_num=1,
         upload_func=create_story_and_scenes
     )
     video_remote_url = video_editor.edit_movie_for_remote_url(image_query)
     if (video_remote_url != ''):
         result = complete_scheduling_and_posting_of_video(video_remote_url)
-        print(f'youtube schedule result\n\n{result}')
+        print(f'⏰ YT scheduled! \n{result}')
     else:
-        print('something went wrong with our video remote url')    
+        print('🔥 YT error getting remote video url')    
 
 def get_recent_videos():
     # Set up the YouTube API client
@@ -216,5 +218,4 @@ def get_recent_videos():
 
     # Print the title and video ID of each video in the response
     for item in response["items"]:
-        print(f'Title: {item["snippet"]["title"]}')
-        print(f'Video ID: {item["id"]["videoId"]}')
+        print(f'📦 Title: {item["snippet"]["title"]} && Video ID: {item["id"]["videoId"]}')

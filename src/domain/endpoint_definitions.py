@@ -1,8 +1,12 @@
 import sys
-sys.path.append("../src")
-
 import json
+import os
+import sys
 import requests
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 #Reuse this facebook and instagram
 def make_api_call( url, headers = '', req_params = '', req_json = '', req_auth = '', type = '' ):

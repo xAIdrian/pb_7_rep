@@ -1,6 +1,9 @@
 import sys
 import os
-sys.path.append("../src")
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 def get_file_name_from_video_path( file_path ):
     # Split the path into a list of directories and the file name

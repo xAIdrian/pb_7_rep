@@ -1,12 +1,14 @@
 import sys
 import os
-sys.path.append("../src")
-
 import openai
 from time import time,sleep
 import utility.utils as utils
 import appsecrets as appsecrets
 import random
+
+# This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, "../src"))
 
 art_styles = [
     "Oil painting style with soft brushstrokes and warm tones",
