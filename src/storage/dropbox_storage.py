@@ -56,7 +56,6 @@ def bulk_download_prompts():
 
         # Create the directory if it doesn't exist
         os.makedirs(local_directory, exist_ok=True)
-        print('Downloading from dropbox...')
 
         download_if_available(
             entry.path_lower,
@@ -88,10 +87,9 @@ def download_from_dropbox( remote_file_path, local_download_path ):
 def download_if_available( remote_file_path, local_download_path, dl_func ):
     # Check if this is the earliest uploaded video file
     if (remote_file_path is None):
-        print("No files found") 
+        print("🔥 No files found") 
         return ''
-    elif (os.path.isfile(local_download_path)):
-        print("File already downloaded")        
+    elif (os.path.isfile(local_download_path)):    
         return local_download_path
     else:
         return dl_func(remote_file_path, local_download_path)

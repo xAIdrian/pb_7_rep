@@ -128,6 +128,10 @@ def schedule_video_tweet( tweet, video_remote_url ):
             payload
         )
         print(f'⏰ Tweet scheduled!\n{result}')  
+    else:
+        print('🔥 Error scheduling TW')
+        return ''
+    
 
 def schedule_tweet( tweet ):
     if (tweet != ''):
@@ -139,3 +143,6 @@ def schedule_tweet( tweet ):
             payload
         )
         print(f'⏰ Tweet scheduled!\n{result}') 
+    else:
+        print('🔥 Error scheduling TW')
+        return ''    

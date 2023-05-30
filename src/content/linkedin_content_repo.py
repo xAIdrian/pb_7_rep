@@ -125,7 +125,10 @@ def post_to_linkedin(is_testmode=False):
     ) 
 
 def schedule_linkedin_post( text ):
-
+    if (text is None or text == ''):
+        print('🔥 Error scheduling LI')
+        return ''
+    
     payload = dict()
     payload['text'] = text
     result = firebase_storage_instance.upload_scheduled_post(

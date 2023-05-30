@@ -41,6 +41,9 @@ def create_ig_media_object( params, with_token ):
     return endpointParams
 
 def schedule_ig_video_post( caption, db_remote_path ):
+    if (db_remote_path is None or db_remote_path == '' or caption is None or caption == ''):
+        print('🔥 Error scheduling for IG')
+        return ''
     
     params = meta_tokens.fetch_personal_access_token() 
 
@@ -217,7 +220,7 @@ def monitor_ig_upload_status( ig_upload_response, post_params, publish_func ):
         time.sleep( 5 ) # wait 5 seconds if the media object is still being processed
 
     publish_container_response = publish_func( upload_container_id, post_params ) # publish the post to instagram
-    print(f"IG upload complete {publish_container_response['json_data']['id']}") # json response from ig api
+    print(f"✅ IG upload complete") # json response from ig api
     return publish_container_response
 
 def get_content_publishing_limit( params ) :

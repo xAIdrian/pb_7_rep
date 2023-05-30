@@ -100,6 +100,10 @@ def complete_scheduling_and_posting_of_video ( remote_video_path ):
     return response
 
 def scheduled_youtube_video ( remote_video_url ):  
+    if (remote_video_url is None or remote_video_url == ''):
+        print('🔥 Error scheduling YT')
+        return ''
+    
     summary_file = os.path.join('src', 'outputs', 'summary_output.txt')
     title = gpt3.prompt_to_string_from_file(
         os.path.join('src', 'input_prompts', 'youtube_title.txt'),
@@ -140,21 +144,31 @@ def get_youtube_credentials():
     flow = google_auth_oauthlib.flow.InstalledAppFlow.from_client_secrets_file(file_path, SCOPES)
 
     # get cached values
-    token_file = os.path.join('src', 'yt_access_token.pickle')
-    with open(token_file, "rb") as input_file:
-        credentials = pickle.load(input_file)
+    try:
+        token_file = os.path.join('src', 'yt_access_token.pickle')
+        with open(token_file, "rb") as input_file:
+            credentials = pickle.load(input_file)
 
-    if (credentials == ''):
-        credentials = flow.run_local_server()
+        if (credentials == ''):
+            credentials = flow.run_local_server()
+            
+            with open(token_file, 'wb') as token:
+                pickle.dump(credentials, token)  
+    except:
+        print('🔥 YT error getting cached credentials')
+        # this is bad and needs to be updated
+        # credentials = flow.run_local_server()
         
-        with open(token_file, 'wb') as token:
-            pickle.dump(credentials, token)                    
+        # with open(token_file, 'wb') as token:
+        #     pickle.dump(credentials, token)
+
     print(f'✅ YT authentication complete and approved!')
     return credentials
 
 def post_previously_scheduled_youtube_video():
     earliest_scheduled_datetime_str = firebase_storage_instance.get_earliest_scheduled_datetime(PostingPlatform.YOUTUBE)
-    if (earliest_scheduled_datetime_str == ''): return 'no posts scheduled'
+    if (earliest_scheduled_datetime_str == ''): 
+        return 'no posts scheduled'
     
     ready_to_post = time_utils.is_current_posting_time_within_window(earliest_scheduled_datetime_str)
     if (ready_to_post):  

@@ -22,18 +22,23 @@ openai.api_key = appsecrets.OPEN_AI_API_KEY
     Returns:
         String of AI generated content
 '''
-def gpt_3 (prompt):
-    response = openai.Completion.create(
-        model="text-davinci-003",
-        prompt=prompt,
-        temperature=1.2,
-        max_tokens=2000,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0
-    )
-    text = response['choices'][0]['text'].strip()
-    return text
+def gpt_3(prompt):
+    try:
+        response = openai.Completion.create(
+            model="text-davinci-003",
+            prompt=prompt,
+            temperature=1.2,
+            max_tokens=2000,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
+        )
+        text = response['choices'][0]['text'].strip()
+        return text
+    except Exception as err:
+        print(err)
+        return ''
+    
 
 def mp3_to_transcript(mp3_file_path):
     print('Processing mp3 to transcript')

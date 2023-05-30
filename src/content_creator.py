@@ -90,7 +90,7 @@ if __name__ == '__main__':
         )
         gpt.generate_text_prompt(
             prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
-            post_num=5,
+            post_num=6,
             upload_func=twitter_content_repo.schedule_tweet
         )
 

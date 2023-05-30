@@ -19,9 +19,8 @@ facebook_times_array = [
 ]
 
 instagram_times_array = [
-    '2023-03-01T18:00:00',
-    '2023-03-01T12:00:00', 
-    '2023-03-01T16:00:00'  
+    '2023-03-01T08:00:00',
+    '2023-03-01T18:00:00'  
 ]
 
 youtube_times_array = [

@@ -125,6 +125,10 @@ def post_to_facebook(is_testmode=False):
     )
 
 def schedule_fb_post( caption, image_query ):
+    if (image_query is None or image_query == '' or caption is None or caption == ''):
+        print('🔥 Error scheduling for FB')
+        return ''
+    
     image_url = image_creator.get_unsplash_image_url(image_query, PostingPlatform.FACEBOOK)
     payload = {
         'media_type': 'IMAGE',
@@ -160,6 +164,10 @@ def schedule_fb_post( caption, image_query ):
 #     make_fb_feed_call_with_token(payload)  
 
 def schedule_fb_video_post( caption, db_remote_path ):    
+    if (db_remote_path is None or db_remote_path == '' or caption is None or caption == ''):
+        print('🔥 Error scheduling for FB')
+        return ''
+    
     payload = {
         'media_type': 'VIDEO',
         'url': db_remote_path,

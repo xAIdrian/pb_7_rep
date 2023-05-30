@@ -62,8 +62,7 @@ def post_medium_blog_article( schedule_datetime_str ):
         "contentFormat": "html",
         "publishStatus": "public",
         "license": "all-rights-reserved",
-        "notifyFollowers": True,
-        "canonicalUrl": "t.me/+GAtVkGVft8cwMTYx"
+        "notifyFollowers": True
     }
     # if tags:
     #     data["tags"] = tags
@@ -77,6 +76,10 @@ def post_medium_blog_article( schedule_datetime_str ):
         print(f"🔥 MD Error creating post: {response.status_code} - {response.text}") 
 
 def schedule_medium_article(blog):
+    if (blog is None or blog == ''):
+        print('🔥 Error scheduling MD')
+        return ''
+    
     try:
         blog = text_utils.groom_body(blog)
         parts = blog.split('\n\n', 1)
