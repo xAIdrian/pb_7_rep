@@ -21,18 +21,17 @@ sys.path.append(os.path.join(current_dir, "../src"))
 
 test_posting=False
 
-def reels_optimize_video_remote_url(remote_video_path):
-    print('...Optimizing video for reels...')
+def reels_optimize_video_remote_path(remote_video_path):
+    print('Optimizing video for reels...')
     local_video_download = dropbox_storage.download_file_to_local_path(remote_video_path)
     optimized_local_path = video_converter.optimize_video_for_reels(local_video_download)
-    optimized_url = dropbox_storage.upload_file_for_sharing_url(
-        optimized_local_path, 
-        DB_FOLDER_REFORMATTED + '/' + os.path.basename(optimized_local_path)
-    )
-    return optimized_url
+    dropbox_file_path = DB_FOLDER_REFORMATTED + '/' + os.path.basename(optimized_local_path)
+    dropbox_storage.upload_file(optimized_local_path, dropbox_file_path)
+    return dropbox_file_path
 
 # Begin the running of our application
 if __name__ == '__main__':
+    print('🚀 Running Money Printer 🚀')
     # Quickly process our post calls
     ig_content_repo.post_ig_media_post(test_posting)
     fb_content_repo.post_to_facebook(test_posting)
@@ -48,6 +47,7 @@ if __name__ == '__main__':
     if (db_video_entry is not None and test_posting == False):
         dropbox_storage.bulk_download_prompts()
 
+        # our remote path to the next video to upload
         raw_db_remote_path = db_video_entry.path_display
 
         # local download: video -> audio -> transcript -> summary
@@ -57,16 +57,16 @@ if __name__ == '__main__':
         summary_output_path = gpt.transcript_to_summary(transcript_path)
 
         # remote paths: remote path -> download -> optimize -> upload
-        db_remote_path = reels_optimize_video_remote_url(raw_db_remote_path)
+        db_remote_scheduled_path = reels_optimize_video_remote_path(raw_db_remote_path)
 
         # Youtube Shorts
         youtube_content_repo.complete_scheduling_and_posting_of_video(
-            remote_video_path=db_remote_path
+            remote_video_path=raw_db_remote_path
         )
-
+        
         # We are setting the new remote file path ahead of the move because we want to post
         # from "Scheduled" folder and move the video out of "Ready" ASAP
-        db_remote_scheduled_path=DB_FOLDER_SCHEDULED + '/' + os.path.basename(db_remote_path)
+        # db_remote_scheduled_path=DB_FOLDER_SCHEDULED + '/' + os.path.basename(db_remote_path)
 
         # Instagram Reels
         gpt.generate_video_with_prompt(
@@ -110,5 +110,5 @@ if __name__ == '__main__':
 
         # Move file and additional cleanup
         dropbox_storage.move_file(raw_db_remote_path, db_remote_scheduled_path)
-        print('🏆 Finished and completed 🏆')
+        print('🏆 Finished Generating Content Run 🏆')
     

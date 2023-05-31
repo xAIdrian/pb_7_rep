@@ -144,7 +144,7 @@ def upload_file( local_file_path, dropbox_file_path ):
             meta = dbx.files_upload(
                 f.read(), 
                 dropbox_file_path, 
-                mode=dropbox.files.WriteMode("overwrite")
+                mode=dropbox.files.WriteMode.overwrite
             )
             print("Upload success to DBX")
             return meta
@@ -152,7 +152,6 @@ def upload_file( local_file_path, dropbox_file_path ):
         print('Error uploading file to Dropbox: ' + str(e))          
 
 def upload_file_for_sharing_url( local_file_path, dropbox_file_path ):
-    upload_file(local_file_path, dropbox_file_path)
     return get_streaming_download_url(dropbox_file_path)
 
 def move_file(source_path, destination_path):

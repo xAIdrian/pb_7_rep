@@ -4,6 +4,7 @@ import time
 import meta_graph_api.meta_tokens as meta_tokens
 from domain.endpoint_definitions import make_api_call
 import media.image_creator as image_creator
+from storage.dropbox_storage import DB_FOLDER_REFORMATTED, upload_file_for_sharing_url
 from storage.firebase_storage import firebase_storage_instance, PostingPlatform
 import json
 
@@ -123,11 +124,14 @@ def make_ig_api_call_with_token( firebase_params ):
 
     elif (firebase_params['media_type'] == 'REELS' or firebase_params['media_type'] == 'VIDEO'):
         
-        # optimized_url = optimize_video_for_reels_url(firebase_params)
+        video_url = firebase_params['video_url']
+        optimized_url = upload_file_for_sharing_url(
+            video_url, 
+            DB_FOLDER_REFORMATTED + '/' + os.path.basename(video_url)
+        )
         
         post_params['media_type'] = 'REELS'
-        # post_params['video_url'] = optimized_url
-        post_params['video_url'] = firebase_params['video_url']
+        post_params['video_url'] = optimized_url
         post_params['published'] = firebase_params['published']
         post_params['share_to_feed'] = True
 
@@ -216,11 +220,11 @@ def monitor_ig_upload_status( ig_upload_response, post_params, publish_func ):
             print(container_status_response['json_data']['status'])
             break
 
-        print(f"🌐Status Code: {container_status_code.lower()}") # status code of the object
+        print(f"🌐 Status Code: {container_status_code.lower()}") # status code of the object
         time.sleep( 5 ) # wait 5 seconds if the media object is still being processed
 
     publish_container_response = publish_func( upload_container_id, post_params ) # publish the post to instagram
-    print(f"✅ IG upload complete") # json response from ig api
+    print(f"🌐 IG upload complete") # json response from ig api
     return publish_container_response
 
 def get_content_publishing_limit( params ) :

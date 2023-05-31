@@ -55,7 +55,6 @@ def mp3_to_transcript(mp3_file_path):
 def transcript_to_summary(transcript_file_path):
     print('Processing transcript to summary')
     alltext = utils.open_file(transcript_file_path)
-    print("🚀 ~ file: gpt.py:51 ~ alltext:", alltext)
     chunks = textwrap.wrap(alltext, 2500)
     result = list()
     count = 0
@@ -87,12 +86,6 @@ def get_gpt_generated_text( prompt_source ):
     feed_source = utils.open_file(feedin_source_file)
     applied_prompt = utils.open_file(prompt_source).replace('<<FEED>>', feed_source)
     return gpt_3(applied_prompt)
-
-# def get_polished_generated_text ( text ):
-#     # get the first draft of the generated text
-#     feedin_source_file = os.path.join("src", "input_prompts", "polish.txt")
-#     applied_prompt = utils.open_file(feedin_source_file).replace('<<FEED>>', text)
-#     return gpt_3(applied_prompt)
 
 def generate_video_with_prompt( 
         prompt_source, 
@@ -126,26 +119,26 @@ def generate_text_prompt(
     ):
     
     for num in range(post_num):
-        print(f'Processing #{num+1} of {prompt_source}')
+        print(f'Processing #{num + 1} of {prompt_source}')
         gpt_text = get_gpt_generated_text(prompt_source)
 
         upload_func(gpt_text)
 
 def prompt_to_string_from_file( prompt_source_file, feedin_source_file ):
-    print("🚀 ~ file: gpt.py:129 ~ prompt_to_string_from_file:", 'prompt_to_string_from_file')
+    print("🚀 ~ file: gpt.py:129 ~ prompt_to_string_from_file:", prompt_source_file, feedin_source_file)
     feed_source = utils.open_file(feedin_source_file)
     appliedprompt = utils.open_file(prompt_source_file).replace('<<FEED>>', feed_source)
     finaltext = gpt_3(appliedprompt)
     return finaltext
 
 def prompt_to_string( prompt_source_file, feedin_source ):
-    print("🚀 ~ file: gpt.py:136 ~ prompt_to_string:", prompt_to_string)
+    print("🚀 ~ file: gpt.py:136 ~ prompt_to_string:", prompt_source_file, feedin_source)
     appliedprompt = utils.open_file(prompt_source_file).replace('<<FEED>>', feedin_source)
     finaltext = gpt_3(appliedprompt)
     return finaltext
 
 def link_prompt_to_string( prompt_source_file, feedin_title, feedin_link ):
-    print("🚀 ~ file: gpt.py:142 ~ link_prompt_to_string:", link_prompt_to_string)
+    print("🚀 ~ file: gpt.py:142 ~ link_prompt_to_string:", prompt_source_file, feedin_title, feedin_link)
     appliedprompt = utils.open_file(prompt_source_file).replace('<<TITLE>>', feedin_title).replace('<<LINK>>', feedin_link)
     finaltext = gpt_3(appliedprompt)
     return finaltext

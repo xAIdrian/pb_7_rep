@@ -54,7 +54,7 @@ def complete_scheduling_and_posting_of_video ( remote_video_path ):
         feedin_source_file=summary_file
     )
     title = text_utils.format_yt_title(title)
-
+    
     description = gpt3.prompt_to_string_from_file(
         prompt_source_file=os.path.join('src', 'input_prompts', 'youtube_description.txt'),
         feedin_source_file=summary_file
@@ -63,6 +63,11 @@ def complete_scheduling_and_posting_of_video ( remote_video_path ):
 
     upload_file_path = dropbox_storage.download_file_to_local_path(remote_video_path)
     posting_time = scheduler.get_best_posting_time(PostingPlatform.YOUTUBE)
+
+    if title == '':
+        title = 'Title'
+    if description == '':
+        description = 'Description'   
 
     request = youtube.videos().insert(
         part="snippet,status",
@@ -146,24 +151,27 @@ def get_youtube_credentials():
     # get cached values
     try:
         token_file = os.path.join('src', 'yt_access_token.pickle')
+
         with open(token_file, "rb") as input_file:
             credentials = pickle.load(input_file)
 
-        if (credentials == ''):
-            credentials = flow.run_local_server()
-            
-            with open(token_file, 'wb') as token:
-                pickle.dump(credentials, token)  
-    except:
-        print('🔥 YT error getting cached credentials')
+            if (credentials == ''):
+                credentials = flow.run_local_server()
+                
+                with open(token_file, 'wb') as token:
+                    pickle.dump(credentials, token)            
+  
+        print(f'✅ YT authentication complete and approved!')
+        return credentials
+    except Exception as e:
+        print(f'🔥 YT error getting cached credentials: {e}')
         # this is bad and needs to be updated
-        # credentials = flow.run_local_server()
+        credentials = flow.run_local_server()
         
-        # with open(token_file, 'wb') as token:
-        #     pickle.dump(credentials, token)
-
-    print(f'✅ YT authentication complete and approved!')
-    return credentials
+        with open(token_file, 'wb') as token:
+            pickle.dump(credentials, token)
+        
+        return credentials
 
 def post_previously_scheduled_youtube_video():
     earliest_scheduled_datetime_str = firebase_storage_instance.get_earliest_scheduled_datetime(PostingPlatform.YOUTUBE)
