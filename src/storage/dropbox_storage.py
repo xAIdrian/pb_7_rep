@@ -151,10 +151,19 @@ def upload_file( local_file_path, dropbox_file_path ):
     except Exception as e:
         print('Error uploading file to Dropbox: ' + str(e))          
 
-def upload_file_for_sharing_url( local_file_path, dropbox_file_path ):
+def upload_file_for_sharing_url( dropbox_file_path ):
     return get_streaming_download_url(dropbox_file_path)
 
-def move_file(source_path, destination_path):
+def delete_file( dropbox_file_path ):
+    try:
+        dbx.files_delete_v2(dropbox_file_path)
+        print(f'Deleted {dropbox_file_path} successfully!')
+    except AuthError as e:
+        print(f'Error authenticating: {e}')
+    except Exception as e:
+        print(f'Error deleting file: {e}')
+
+def move_file( source_path, destination_path ):
     try:
         dbx.files_move_v2(source_path, destination_path)
         print(f'Moved {source_path} to {destination_path} successfully!')

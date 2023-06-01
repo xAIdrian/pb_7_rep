@@ -16,9 +16,17 @@ def get_author_from_user(headers):
     '''
     response = requests.get('https://api.linkedin.com/v2/me', headers = headers)
     user_info = response.json()
-    print(f'📦 LI userinfo {user_info}')
-    urn = user_info['id']
-    return f'urn:li:person:{urn}'
+    if 'status' in user_info:
+        if (user_info['status'] == 401):
+            print(f'🔥 LI Error getting user info {user_info}')
+            return 'update creds'
+        elif (user_info['status'] != 200):
+            print(f'🔥 LI Error getting user info {user_info}')
+            return ''
+    else:
+        print(f'📦 LI userinfo {user_info}')
+        urn = user_info['id']
+        return f'urn:li:person:{urn}'
 
 def post_linkedin_link_message():
     #get post from firebase
@@ -91,8 +99,10 @@ def post_linkedin_user_message( scheduled_datetime_str ):
     gen_headers = li_auth.headers(access_token) # Make the headers to attach to the API call.
 
     author = get_author_from_user(gen_headers)
+    if (author == 'update creds'):
+        return { }
+    
     post_url = 'https://api.linkedin.com/v2/ugcPosts'
-
     post_data = {
         "author": author,
         "lifecycleState": "PUBLISHED",
