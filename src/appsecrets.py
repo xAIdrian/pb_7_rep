@@ -8,6 +8,7 @@ def access_secret(secret_id, version="1"):
     response = client.access_secret_version(request={"name": name})
     return response.payload.data.decode("UTF-8")
 
+print("\nLoading secrets...")
 OPEN_AI_API_KEY=access_secret("OPEN_AI_API_KEY")
 DROPBOX_APP_ID=access_secret("DROPBOX_APP_ID")
 DROPBOX_APP_SECRET=access_secret("DROPBOX_APP_SECRET")

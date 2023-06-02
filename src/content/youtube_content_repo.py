@@ -54,6 +54,10 @@ def complete_scheduling_and_posting_of_video ( remote_video_path ):
         feedin_source_file=summary_file
     )
     title = text_utils.format_yt_title(title)
+    if (len(title) > 69): #haha
+        title = title[:65] + '...'
+    if (len(description) > 4999):
+        description = description[:4995] + '...'    
     
     description = gpt3.prompt_to_string_from_file(
         prompt_source_file=os.path.join('src', 'input_prompts', 'youtube_description.txt'),

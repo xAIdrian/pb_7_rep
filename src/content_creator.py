@@ -19,7 +19,7 @@ from storage.dropbox_storage import DB_FOLDER_REFORMATTED
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_dir, "../src"))
 
-test_posting=True
+test_posting=False
 
 def reels_optimize_video_remote_path(remote_video_path):
     print('Optimizing video for reels...')
@@ -34,12 +34,13 @@ if __name__ == '__main__':
     print('💸 Running Money Printer 💸')
 
     # Quickly process our post calls
-    ig_content_repo.post_ig_media_post(test_posting)
+    # ig_content_repo.post_ig_media_post(test_posting)
     fb_content_repo.post_to_facebook(test_posting)
     twitter_content_repo.post_tweet(test_posting)
     medium_content_repo.post_to_medium(test_posting)
     linkedin_content_repo.post_to_linkedin(test_posting)
     youtube_content_repo.post_previously_scheduled_youtube_video() 
+
 
     # Get newest video from Dropbox and create content
     local_joined_path = os.path.join('src','output_downloads')
@@ -65,10 +66,6 @@ if __name__ == '__main__':
         youtube_content_repo.complete_scheduling_and_posting_of_video(
             remote_video_path=db_remote_scheduled_path
         )
-        
-        # We are setting the new remote file path ahead of the move because we want to post
-        # from "Scheduled" folder and move the video out of "Ready" ASAP
-        # db_remote_scheduled_path=DB_FOLDER_SCHEDULED + '/' + os.path.basename(db_remote_path)
 
         # Instagram Reels
         gpt.generate_video_with_prompt(
@@ -109,5 +106,6 @@ if __name__ == '__main__':
             post_num=1,
             upload_func=medium_content_repo.schedule_medium_article
         )
+        
         print('🏆 Finished Generating Content Run 🏆')
     

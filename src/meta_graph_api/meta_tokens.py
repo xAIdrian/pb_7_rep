@@ -104,7 +104,12 @@ def make_page_access_token_request():
     print(response['json_data_pretty'])
 
     # access new access token and store remotely
-    params['page_access_token'] = response['json_data']['access_token']
+    # params['page_access_token'] = response['json_data']['access_token']
+    print(" 🛑 ------------------------------------------------------------------------------- 🛑")
+    print(" 🛑 ~ file: meta_tokens.py:108 ~ response['json_data']:", response['json_data'])
+    print(" 🛑 ------------------------------------------------------------------------------- 🛑")
+    token = response['json_data']['access_token']
+    params['page_access_token'] = refresh_fb_page_access_token(token)
     firebase_storage_instance.store_meta_bearer_token(PostingPlatform.FACEBOOK, params['page_access_token'])
     
     return params
@@ -120,7 +125,7 @@ def refresh_fb_page_access_token( existing_access_token ):
             str: the new long-lived Facebook Page Access Token. Empty strings if erros arise
     '''
     # Check the state of the existing access token
-    debug_token_url = f'https://graph.facebook.com/v12.0/debug_token?input_token={existing_access_token}&access_token={appsecrets.META_APP_ID}|{appsecrets.META_APP_SECRET}'
+    debug_token_url = f'https://graph.facebook.com/v15.0/debug_token?input_token={existing_access_token}&access_token={appsecrets.META_APP_ID}|{appsecrets.META_APP_SECRET}'
 
     print(f'FB checking the validity of cached token')
     debug_token_response = requests.get(debug_token_url)
@@ -142,7 +147,7 @@ def refresh_fb_page_access_token( existing_access_token ):
 
     # Get the new long-lived access token
     print('FB making request to update our existing long lived token')
-    exchange_token_url = f'https://graph.facebook.com/v12.0/oauth/access_token?grant_type=fb_exchange_token&client_id={appsecrets.META_APP_ID}&client_secret={appsecrets.META_APP_SECRET}&fb_exchange_token={existing_access_token}'
+    exchange_token_url = f'https://graph.facebook.com/v15.0/oauth/access_token?grant_type=fb_exchange_token&client_id={appsecrets.META_APP_ID}&client_secret={appsecrets.META_APP_SECRET}&fb_exchange_token={existing_access_token}'
     exchange_token_response = requests.get(exchange_token_url)
 
     if exchange_token_response.status_code == 200:
@@ -171,7 +176,8 @@ def fetch_fb_page_access_token():
         params['graph_domain'] = 'https://graph.facebook.com/' # base domain for api calls
         params['graph_version'] = 'v15.0' # version of the api we are hitting
         params['endpoint_base'] = params['graph_domain'] + params['graph_version'] + '/'
-        params['page_access_token'] = refresh_fb_page_access_token(cachedToken)
+        # params['page_access_token'] = refresh_fb_page_access_token(cachedToken)
+        params['page_access_token'] = cachedToken
         return params
     else:
         return make_page_access_token_request()

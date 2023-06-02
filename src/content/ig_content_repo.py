@@ -125,10 +125,7 @@ def make_ig_api_call_with_token( firebase_params ):
     elif (firebase_params['media_type'] == 'REELS' or firebase_params['media_type'] == 'VIDEO'):
         
         video_url = firebase_params['video_url']
-        optimized_url = upload_file_for_sharing_url(
-            video_url, 
-            DB_FOLDER_REFORMATTED + '/' + os.path.basename(video_url)
-        )
+        optimized_url = upload_file_for_sharing_url(video_url)
         
         post_params['media_type'] = 'REELS'
         post_params['video_url'] = optimized_url
