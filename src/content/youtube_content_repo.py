@@ -55,15 +55,15 @@ def complete_scheduling_and_posting_of_video ( remote_video_path ):
     )
     title = text_utils.format_yt_title(title)
     if (len(title) > 69): #haha
-        title = title[:65] + '...'
-    if (len(description) > 4999):
-        description = description[:4995] + '...'    
+        title = title[:65] + '...'   
     
     description = gpt3.prompt_to_string_from_file(
         prompt_source_file=os.path.join('src', 'input_prompts', 'youtube_description.txt'),
         feedin_source_file=summary_file
     )
     description = text_utils.format_yt_description(description)
+    if (len(description) > 4999):
+        description = description[:4995] + '...' 
 
     upload_file_path = dropbox_storage.download_file_to_local_path(remote_video_path)
     posting_time = scheduler.get_best_posting_time(PostingPlatform.YOUTUBE)
