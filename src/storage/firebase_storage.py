@@ -179,20 +179,20 @@ class FirebaseStorage():
     def upload_if_ready( self, platform, api_fun, is_test=False ):
         earliest_scheduled_datetime_str = firebase_storage_instance.get_earliest_scheduled_datetime(platform)
         while (time_utils.is_expired(earliest_scheduled_datetime_str) and is_test == False):
-            print('❌ Expired! Deleting post')
+            print(f'❌ {platform.value} Expired! Deleting post')
             self.delete_post(platform, earliest_scheduled_datetime_str)
             earliest_scheduled_datetime_str = firebase_storage_instance.get_earliest_scheduled_datetime(platform)
 
         if (earliest_scheduled_datetime_str == '' or earliest_scheduled_datetime_str is None): 
             return 'no posts scheduled'
-        print(f'{platform.value} Next Post: {earliest_scheduled_datetime_str}')
+        print(f'👉 {platform.value} Analyzing Post: {earliest_scheduled_datetime_str}')
         
         ready_to_post = time_utils.is_current_posting_time_within_window(earliest_scheduled_datetime_str)
         if (ready_to_post or is_test == True): 
             # our main functionality
             upload_result = api_fun(earliest_scheduled_datetime_str)
-            
-            if(is_test == False): self.delete_post(platform, earliest_scheduled_datetime_str)
+            self.delete_post(platform, earliest_scheduled_datetime_str)
+
             return upload_result
         else:
             return f'{platform.value} time not within posting window' 

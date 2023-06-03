@@ -19,7 +19,7 @@ from storage.dropbox_storage import DB_FOLDER_REFORMATTED
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_dir, "../src"))
 
-test_posting=False
+test_mode_enabled=True
 
 def reels_optimize_video_remote_path(remote_video_path):
     print('Optimizing video for reels...')
@@ -34,11 +34,11 @@ if __name__ == '__main__':
     print('💸 Running Money Printer 💸')
 
     # Quickly process our post calls
-    # ig_content_repo.post_ig_media_post(test_posting)
-    fb_content_repo.post_to_facebook(test_posting)
-    twitter_content_repo.post_tweet(test_posting)
-    medium_content_repo.post_to_medium(test_posting)
-    linkedin_content_repo.post_to_linkedin(test_posting)
+    ig_content_repo.post_ig_media_post(test_mode_enabled)
+    fb_content_repo.post_to_facebook(test_mode_enabled)
+    twitter_content_repo.post_tweet(test_mode_enabled)
+    medium_content_repo.post_to_medium(test_mode_enabled)
+    linkedin_content_repo.post_to_linkedin(test_mode_enabled)
     youtube_content_repo.post_previously_scheduled_youtube_video() 
 
 
@@ -46,7 +46,7 @@ if __name__ == '__main__':
     local_joined_path = os.path.join('src','output_downloads')
     db_video_entry = dropbox_storage.get_earliest_ready_short_video()
 
-    if (db_video_entry is not None and test_posting == False):
+    if (db_video_entry is not None and test_mode_enabled == False):
         dropbox_storage.bulk_download_prompts()
 
         # our remote path to the next video to upload
