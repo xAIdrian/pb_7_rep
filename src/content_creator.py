@@ -14,12 +14,21 @@ import content.medium_content_repo as medium_content_repo
 import media.video_converter as video_converter
 import storage.dropbox_storage as dropbox_storage
 from storage.dropbox_storage import DB_FOLDER_REFORMATTED
+import gspread
 
 # This code retrieves the current directory path and appends the '../src' directory to the sys.path, allowing access to modules in that directory.
 current_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.join(current_dir, "../src"))
 
 test_mode_enabled=True
+
+CLIENT_SECRET_FILE = 'google_youtube_client.json'
+
+def get_google_sheets():
+    file_path=os.path.join('src', CLIENT_SECRET_FILE)
+    sa = gspread.service_account(filename=file_path)  
+    sh = sa.open('AI Content Machine')  
+    return sh  
 
 def reels_optimize_video_remote_path(remote_video_path):
     print('Optimizing video for reels...')
@@ -45,10 +54,10 @@ if __name__ == '__main__':
     # Get newest video from Dropbox and create content
     local_joined_path = os.path.join('src','output_downloads')
     db_video_entry = dropbox_storage.get_earliest_ready_short_video()
-
+    
+    dropbox_storage.bulk_download_prompts()
+    
     if (db_video_entry is not None and test_mode_enabled == False):
-        dropbox_storage.bulk_download_prompts()
-
         # our remote path to the next video to upload
         raw_db_remote_path = db_video_entry.path_display
 
@@ -109,3 +118,65 @@ if __name__ == '__main__':
         
         print('🏆 Finished Generating Content Run 🏆')
     
+    elif (test_mode_enabled == False):
+        print('👨‍💻 Text Content To Generate 👨‍💻')
+        # Begin our block for long running creation
+        # Schedule our content by iterating through each row of sheet
+        sh=get_google_sheets()
+        sheet=sh.worksheet("Sheet1")
+        cell_list=sheet.get_all_values()
+
+        # we don't want to tax OpenAI. Process one per run
+        has_processed_row = False
+
+        for i, row in enumerate(cell_list):
+            # if we do not find the word 'Scheduled' in the row, 
+            # then we have not processed it yet
+            # take action on the row
+            if (row.count('Scheduled') == 0 and has_processed_row == False):
+                print(f"Processing Row {i}: {row}")
+                content_summary = row[0]
+                content_description = row[1]
+
+                try:
+                    gpt.gpt_generate_summary(content_summary)
+
+                    #INSTAGRAM
+                    gpt.generate_image_prompt(
+                        prompt_source=os.path.join('src', 'input_prompts', 'instagram.txt'),
+                        image_query=content_description,
+                        post_num=1,
+                        upload_func=ig_content_repo.schedule_ig_image_post
+                    )
+
+                    #FACEBOOK
+                    gpt.generate_image_prompt(
+                        prompt_source=os.path.join('src', 'input_prompts', 'facebook.txt'),
+                        image_query=content_description,
+                        post_num=1,
+                        upload_func=fb_content_repo.schedule_fb_post
+                    )
+
+                    #TWITTER
+                    gpt.generate_text_prompt(
+                        prompt_source=os.path.join('src', 'input_prompts', 'tweetstorm.txt'),
+                        post_num=5,
+                        upload_func=twitter_content_repo.schedule_tweet
+                    )
+
+                    #LINKEDIN
+                    gpt.generate_text_prompt(
+                        prompt_source=os.path.join('src', 'input_prompts', 'linkedin.txt'),
+                        post_num=2,
+                        upload_func=linkedin_content_repo.schedule_linkedin_post,
+                    )
+
+                    #MEDIUM
+                    gpt.generate_text_prompt(
+                        prompt_source=os.path.join('src', 'input_prompts', 'blog.txt'),
+                        post_num=1,
+                        upload_func=medium_content_repo.schedule_medium_article
+                    )
+
+                except Exception as e:
+                    print(f'Finished with error {e}')  

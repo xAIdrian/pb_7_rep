@@ -16,6 +16,7 @@ sys.path.append(os.path.join(current_dir, "../src"))
 
 def initialize_tweepy():
     # Authenticate to Twitter
+    # MUST upgrade to oauth2handler https://docs.tweepy.org/en/stable/authentication.html
     auth = tweepy.OAuthHandler(appsecrets.TWITTER_API_KEY, appsecrets.TWITTER_API_SECRET)
     auth.set_access_token(appsecrets.TWITTER_API_AUTH_TOKEN, appsecrets.TWITTER_API_AUTH_SECRET)
 

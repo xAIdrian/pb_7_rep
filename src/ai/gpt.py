@@ -124,6 +124,19 @@ def generate_text_prompt(
 
         upload_func(gpt_text)
 
+def generate_image_prompt( 
+        prompt_source, 
+        image_query,
+        post_num, 
+        upload_func
+    ):
+    
+    for num in range(post_num):
+        print(f'Processing #{num + 1} of {prompt_source}')
+        gpt_text = get_gpt_generated_text(prompt_source)
+
+        upload_func(gpt_text, image_query)        
+
 def prompt_to_string_from_file( prompt_source_file, feedin_source_file ):
     print("🚀 ~ file: gpt.py:129 ~ prompt_to_string_from_file:", prompt_source_file, feedin_source_file)
     feed_source = utils.open_file(feedin_source_file)

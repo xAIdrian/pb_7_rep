@@ -19,3 +19,4 @@ google-api-python-client==2.77.0
 google-auth-oauthlib==1.0.0
 praw==7.7.0
 requests-toolbelt==0.10.1
+gspread>=5.0.0
